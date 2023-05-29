@@ -26,17 +26,15 @@ namespace Apps.Hubspot.Crm.Webhooks.Bridge
         public void Subscribe(string _event, string url)
         {
             var client = new RestClient(ApplicationConstants.BridgeServiceUrl);
-            var request = new RestRequest(ApplicationConstants.BridgeServicePath, Method.Post);
-            request.AddJsonBody(new BridgeHook { PortalId = PortalId, Event = _event, Url = url });
+            var request = new RestRequest($"/{PortalId}/{_event}", Method.Post);
+            request.AddBody(url);
             client.Execute(request);
         }
 
         public void Unsubscribe(string _event)
         {
             var client = new RestClient(ApplicationConstants.BridgeServiceUrl);
-            var request = new RestRequest(ApplicationConstants.BridgeServicePath, Method.Delete);
-            request.AddQueryParameter("id", PortalId);
-            request.AddQueryParameter("event", _event);
+            var request = new RestRequest($"/{PortalId}/{_event}", Method.Delete);
             client.Execute(request);
         }
     }

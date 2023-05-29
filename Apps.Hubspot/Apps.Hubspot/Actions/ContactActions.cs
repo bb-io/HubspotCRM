@@ -3,6 +3,7 @@ using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
 using Apps.Hubspot.Crm.Models;
+using Apps.Hubspot.Crm.Outputs;
 
 namespace Apps.Hubspot.Crm.Actions
 {
@@ -26,6 +27,24 @@ namespace Apps.Hubspot.Crm.Actions
             return client.GetObject<Contact>(request);
         }
 
+        [Action("Get contact property", Description = "Get a specific property of a contact")]
+        public CustomProperty GetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] string contactId, [ActionParameter] string property)
+        {
+            var client = new HubspotClient();
+            var request = new HubspotRequest($"/crm/v3/objects/contacts/{contactId}", Method.Get, authenticationCredentialsProviders);
+            return client.GetProperty(request, property);
+        }
+
+        [Action("Set contact property", Description = "Set a specific property of a contact")]
+        public Models.Contact SetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] string contactId, [ActionParameter] string property, [ActionParameter] string value)
+        {
+            var client = new HubspotClient();
+            var request = new HubspotRequest($"/crm/v3/objects/contact/{contactId}", Method.Patch, authenticationCredentialsProviders);
+            return client.SetProperty<Models.Contact>(request, property, value);
+        }
+
         [Action("Create contact", Description = "Create a new contact")]
         public BaseObject? CreateContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] Contact contact)
@@ -34,16 +53,6 @@ namespace Apps.Hubspot.Crm.Actions
             var request = new HubspotRequest($"/crm/v3/objects/contacts", Method.Post, authenticationCredentialsProviders);
             request.AddObject(contact);
             return client.PostObject(request);
-        }
-
-        [Action("Update contact", Description = "Update a contact's information")]
-        public Contact? UpdateContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string contactId, [ActionParameter] Contact contact)
-        {
-            var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/contacts/${contactId}", Method.Patch, authenticationCredentialsProviders);
-            request.AddObject(contact);
-            return client.PatchObject<Contact>(request);
         }
 
         [Action("Delete contact", Description = "Delete a contact")]

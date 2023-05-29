@@ -1,4 +1,5 @@
 ﻿using Apps.Hubspot.Crm.Models;
+using Apps.Hubspot.Crm.Outputs;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
@@ -20,32 +21,48 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Get company", Description = "Get information of a specific company")]
-        public Company? GetCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public Outputs.Company GetCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter]string companyId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
-            return client.GetObject<Company>(request);
+            request.AddQueryParameter("associations", "contacts");
+            var response = client.GetFullObject<Models.Company>(request);
+            return new Outputs.Company
+            {
+                Id = response.Id,
+                Name = response.Properties.Name,
+                Domain = response.Properties.Domain,
+                ContactIds = response.Associations?["contacts"].GetDistinctIds(),
+            };
+        }
+
+        [Action("Get company property", Description = "Get a specific property of a company")]
+        public CustomProperty GetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] string companyId, [ActionParameter] string property)
+        {
+            var client = new HubspotClient();
+            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
+            return client.GetProperty(request, property);
+        }
+
+        [Action("Set company property", Description = "Set a specific property of a company")]
+        public Models.Company SetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] string companyId, [ActionParameter] string property, [ActionParameter] string value)
+        {
+            var client = new HubspotClient();
+            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Patch, authenticationCredentialsProviders);
+            return client.SetProperty<Models.Company>(request, property, value);
         }
 
         [Action("Create company", Description = "Create a new company")]
         public BaseObject? CreateCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, 
-            [ActionParameter] Company company)
+            [ActionParameter] Models.Company company)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies", Method.Post, authenticationCredentialsProviders);
             request.AddObject(company);
             return client.PostObject(request);
-        }
-
-        [Action("Update company", Description = "Update a company's information")]
-        public Company? UpdateCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string companyId, [ActionParameter] Company company)
-        {
-            var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/companies/${companyId}", Method.Patch, authenticationCredentialsProviders);
-            request.AddObject(company);
-            return client.PatchObject<Company>(request);
         }
 
         [Action("Delete company", Description = "Delete a company")]
