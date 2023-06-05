@@ -46,6 +46,23 @@ namespace Apps.Hubspot.Crm.Actions
             return client.GetProperty(request, property);
         }
 
+        [Action("Get company address", Description = "Get company address")]
+        public GetCompanyAddressResponse GetCompanyAddress(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] string companyId)
+        {
+            var client = new HubspotClient();
+            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
+            return new GetCompanyAddressResponse()
+            {
+                StreetAddress1 = client.GetProperty(request, "Street address").Property,
+                StreetAddress2 = client.GetProperty(request, "Street address 2").Property,
+                PostalCode = client.GetProperty(request, "Postal code").Property,
+                City = client.GetProperty(request, "City").Property,
+                State = client.GetProperty(request, "State/Region").Property,
+                Country = client.GetProperty(request, "Country/Region").Property
+            };
+        }
+
         [Action("Set company property", Description = "Set a specific property of a company")]
         public Models.Company SetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] string companyId, [ActionParameter] string property, [ActionParameter] string value)
