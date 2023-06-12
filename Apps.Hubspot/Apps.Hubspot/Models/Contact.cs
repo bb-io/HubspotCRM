@@ -14,5 +14,6 @@ namespace Apps.Hubspot.Crm.Models
         public string? Phone { get; set; }
         public string? Company { get; set; }
         public string? Website { get; set; }
+        public string? Jobtitle { get; set; }
     }
 }

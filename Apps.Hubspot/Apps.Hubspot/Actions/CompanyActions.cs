@@ -33,7 +33,7 @@ namespace Apps.Hubspot.Crm.Actions
                 Id = response.Id,
                 Name = response.Properties.Name,
                 Domain = response.Properties.Domain,
-                ContactIds = response.Associations?["contacts"].GetDistinctIds(),
+                ContactIds = response.Associations?["contacts"].GetDistinctIds().Select(c => new ContactId() { Id = c}),
             };
         }
 
@@ -54,12 +54,12 @@ namespace Apps.Hubspot.Crm.Actions
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
             return new GetCompanyAddressResponse()
             {
-                StreetAddress1 = client.GetProperty(request, "Street address").Property,
-                StreetAddress2 = client.GetProperty(request, "Street address 2").Property,
-                PostalCode = client.GetProperty(request, "Postal code").Property,
-                City = client.GetProperty(request, "City").Property,
-                State = client.GetProperty(request, "State/Region").Property,
-                Country = client.GetProperty(request, "Country/Region").Property
+                StreetAddress1 = client.GetProperty(request, "address").Property,
+                StreetAddress2 = client.GetProperty(request, "address2").Property,
+                PostalCode = client.GetProperty(request, "zip").Property,
+                City = client.GetProperty(request, "city").Property,
+                State = client.GetProperty(request, "state").Property,
+                Country = client.GetProperty(request, "country").Property
             };
         }
 

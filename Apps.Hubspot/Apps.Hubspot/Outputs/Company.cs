@@ -11,6 +11,11 @@ namespace Apps.Hubspot.Crm.Outputs
         public string? Id { get; set; }
         public string? Name { get; set; }
         public string? Domain { get; set; }
-        public IEnumerable<string>? ContactIds { get; set; }
+        public IEnumerable<ContactId>? ContactIds { get; set; }
+    }
+
+    public class ContactId
+    {
+        public string Id { get; set; }
     }
 }

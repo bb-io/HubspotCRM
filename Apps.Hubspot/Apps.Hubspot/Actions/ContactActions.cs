@@ -23,7 +23,8 @@ namespace Apps.Hubspot.Crm.Actions
             [ActionParameter] string contactId)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/contacts/{contactId}", Method.Get, authenticationCredentialsProviders);
+            var properties = new[] { "firstname", "lastname", "email", "phone", "company", "website", "jobtitle" };
+            var request = new HubspotRequest($"/crm/v3/objects/contacts/{contactId}?properties={string.Join(',', properties)}", Method.Get, authenticationCredentialsProviders);
             return client.GetObject<Contact>(request);
         }
 
