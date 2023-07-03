@@ -37,6 +37,33 @@ namespace Apps.Hubspot.Crm.Actions
             };
         }
 
+        [Action("Get company by custom property", Description = "Get company by custom property value")]
+        public Outputs.Company GetCompanyByCustomValue(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] GetCompanyByCustomValueRequest input)
+        {
+            var client = new HubspotClient();
+            var request = new HubspotRequest($"/crm/v3/objects/companies/search", Method.Post, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                filterGroups = new[]
+                {
+                    new
+                    {
+                        filters = new[]
+                        {
+                            new
+                            {
+                                value = input.CustomPropertyValue,
+                                propertyName = input.CustomPropertyName.ToApiPropertyName(),
+                                @operator = "EQ"
+                            }
+                        }
+                    }
+                }
+            });
+            return GetCompany(authenticationCredentialsProviders, client.GetMultipleObjects(request).First().Id);
+        }
+
         [Action("Get company property", Description = "Get a specific property of a company")]
         public CustomProperty GetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] string companyId, [ActionParameter] string property)

@@ -20,7 +20,7 @@ namespace Apps.Hubspot.Crm
         {
             request.AddQueryParameter("properties", name.ToApiPropertyName());
             var res = ExecuteWithError<ObjectWithCustomProperties>(request);
-            var property = res?.Properties?[name.ToApiPropertyName()];
+            var property = res?.Properties?[name.ToApiPropertyName()] ?? string.Empty;
             return new CustomProperty { Property = property };
         }
 
