@@ -30,7 +30,7 @@ namespace Apps.Hubspot.Webhooks.Handlers
         public async Task UnsubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, Dictionary<string, string> values)
         {
             var bridge = new BridgeService(authenticationCredentialsProviders);
-            bridge.Unsubscribe(SubscriptionEvent);
+            bridge.Unsubscribe(SubscriptionEvent, values["payloadUrl"]);
         }
     }
 }
