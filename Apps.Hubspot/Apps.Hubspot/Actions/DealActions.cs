@@ -20,7 +20,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get deal", Description = "Get information of a specific deal")]
         public Deal? GetDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string dealId)
+            [ActionParameter][Display("Deal ID")] string dealId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Get, authenticationCredentialsProviders);
@@ -29,7 +29,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get deal property", Description = "Get a specific property of a deal")]
         public CustomProperty GetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string dealId, [ActionParameter] string property)
+            [ActionParameter][Display("Deal ID")] string dealId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Get, authenticationCredentialsProviders);
@@ -38,7 +38,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Set deal property", Description = "Set a specific property of a deal")]
         public Models.Deal SetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string dealId, [ActionParameter] string property, [ActionParameter] string value)
+            [ActionParameter][Display("Deal ID")] string dealId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Patch, authenticationCredentialsProviders);
@@ -57,7 +57,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Delete deal", Description = "Delete a deal")]
         public void DeleteDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string dealId)
+            [ActionParameter][Display("Deal ID")] string dealId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Delete, authenticationCredentialsProviders);

@@ -17,7 +17,7 @@ namespace Apps.Hubspot.Crm.Actions
     {
         [Action("Get ticket", Description = "Get information of a specific ticket")]
         public Outputs.Ticket? GetTicket(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string ticketId)
+            [ActionParameter][Display("Ticket ID")] string ticketId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/tickets/{ticketId}", Method.Get, authenticationCredentialsProviders);
@@ -35,7 +35,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get ticket property", Description = "Get a specific property of a ticket")]
         public CustomProperty GetTicketProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string ticketId, [ActionParameter] string property)
+            [ActionParameter][Display("Ticket ID")] string ticketId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/ticket/{ticketId}", Method.Get, authenticationCredentialsProviders);
@@ -44,7 +44,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Set ticket property", Description = "Set a specific property of a ticket")]
         public Models.Ticket SetTicketProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string ticketId, [ActionParameter] string property, [ActionParameter] string value)
+            [ActionParameter][Display("Ticket ID")] string ticketId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Property")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/ticket/{ticketId}", Method.Patch, authenticationCredentialsProviders);

@@ -20,7 +20,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get contact", Description = "Get information of a specific contact")]
         public Contact? GetContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string contactId)
+            [ActionParameter][Display("Contact ID")] string contactId)
         {
             var client = new HubspotClient();
             var properties = new[] { "firstname", "lastname", "email", "phone", "company", "website", "jobtitle" };
@@ -30,7 +30,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get contact property", Description = "Get a specific property of a contact")]
         public CustomProperty GetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string contactId, [ActionParameter] string property)
+            [ActionParameter][Display("Contact ID")] string contactId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/contacts/{contactId}", Method.Get, authenticationCredentialsProviders);
@@ -39,7 +39,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Set contact property", Description = "Set a specific property of a contact")]
         public Models.Contact SetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string contactId, [ActionParameter] string property, [ActionParameter] string value)
+            [ActionParameter][Display("Contact ID")] string contactId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/contact/{contactId}", Method.Patch, authenticationCredentialsProviders);
@@ -58,7 +58,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Delete contact", Description = "Delete a contact")]
         public void DeleteContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] string contactId)
+            [ActionParameter][Display("Contact ID")] string contactId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/contacts/{contactId}", Method.Delete, authenticationCredentialsProviders);
