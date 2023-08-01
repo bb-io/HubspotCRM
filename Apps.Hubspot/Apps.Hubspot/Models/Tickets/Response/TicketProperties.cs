@@ -1,8 +1,8 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.Hubspot.Crm.Models
+namespace Apps.Hubspot.Crm.Models.Tickets.Response
 {
-    public class Ticket
+    public class TicketProperties
     {
         public string Content { get; set; }
 

@@ -43,13 +43,13 @@ namespace Apps.Hubspot.Crm
             return res.Properties;
         }
 
-        public T? ExecuteWithError<T>(HubspotRequest request)
+        public T? ExecuteWithError<T>(RestRequest request)
         {
             var res = ExecuteWithError(request);
             return JsonConvert.DeserializeObject<T>(res.Content);
         }
 
-        public RestResponse ExecuteWithError(HubspotRequest request)
+        public RestResponse ExecuteWithError(RestRequest request)
         {
             var res = this.Execute(request);
 
@@ -65,7 +65,7 @@ namespace Apps.Hubspot.Crm
             return res;
         }
 
-        public List<T> Paginate<T>(HubspotRequest request)
+        public List<T> Paginate<T>(RestRequest request)
         {
             var results = new List<T>();
 
