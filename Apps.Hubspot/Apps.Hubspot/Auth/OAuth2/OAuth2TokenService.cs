@@ -1,8 +1,7 @@
-﻿using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
-using System.Text.Json;
-using System.Threading;
+﻿using System.Text.Json;
+using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 
-namespace Apps.Hubspot.Crm.Authorization.OAuth2
+namespace Apps.Hubspot.Crm.Auth.OAuth2
 {
     public class OAuth2TokenService : IOAuth2TokenService
     {

@@ -1,7 +1,7 @@
 ﻿using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Apps.Hubspot.Crm.Authorization.OAuth2
+namespace Apps.Hubspot.Crm.Auth.OAuth2
 {
     public class OAuth2AuthorizeService : IOAuth2AuthorizeService
     {

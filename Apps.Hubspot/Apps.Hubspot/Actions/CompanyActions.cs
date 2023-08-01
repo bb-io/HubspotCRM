@@ -4,7 +4,6 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using RestSharp;
-using System.ComponentModel.Design;
 
 namespace Apps.Hubspot.Crm.Actions
 {

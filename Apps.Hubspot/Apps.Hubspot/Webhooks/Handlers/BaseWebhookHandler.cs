@@ -1,9 +1,8 @@
 ﻿using Apps.Hubspot.Crm.Webhooks.Bridge;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Webhooks;
-using RestSharp;
 
-namespace Apps.Hubspot.Webhooks.Handlers
+namespace Apps.Hubspot.Crm.Webhooks.Handlers
 {
     public class BaseWebhookHandler : IWebhookEventHandler
     {

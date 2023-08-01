@@ -1,14 +1,8 @@
-﻿using Apps.Hubspot.Crm.Models;
-using Apps.Hubspot.Crm.Outputs;
+﻿using Apps.Hubspot.Crm.Outputs;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Apps.Hubspot.Crm.Actions
 {

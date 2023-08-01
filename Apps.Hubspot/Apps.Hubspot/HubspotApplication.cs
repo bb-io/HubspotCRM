@@ -1,4 +1,4 @@
-﻿using Apps.Hubspot.Crm.Authorization.OAuth2;
+﻿using Apps.Hubspot.Crm.Auth.OAuth2;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 
