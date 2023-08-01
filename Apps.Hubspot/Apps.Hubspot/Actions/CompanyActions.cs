@@ -1,6 +1,6 @@
 ﻿using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Models;
-using Apps.Hubspot.Crm.Outputs;
+using Apps.Hubspot.Crm.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
@@ -21,14 +21,14 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Get company", Description = "Get information of a specific company")]
-        public Outputs.Company GetCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public CompanyEntity GetCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Company ID")] string companyId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
             request.AddQueryParameter("associations", "contacts");
             var response = client.GetFullObject<Models.Company>(request);
-            return new Outputs.Company
+            return new CompanyEntity
             {
                 Id = response.Id,
                 Name = response.Properties.Name,
@@ -38,7 +38,7 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Get company by custom property", Description = "Get company by custom property value")]
-        public Outputs.Company GetCompanyByCustomValue(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public CompanyEntity GetCompanyByCustomValue(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] GetCompanyByCustomValueRequest input)
         {
             var client = new HubspotClient();
@@ -65,7 +65,7 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Get company property", Description = "Get a specific property of a company")]
-        public CustomProperty GetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public CustomPropertyEntity GetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Company ID")] string companyId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();

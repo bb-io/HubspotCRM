@@ -3,7 +3,7 @@ using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
 using Apps.Hubspot.Crm.Models;
-using Apps.Hubspot.Crm.Outputs;
+using Apps.Hubspot.Crm.Models.Entities;
 
 namespace Apps.Hubspot.Crm.Actions
 {
@@ -19,16 +19,18 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Get quote", Description = "Get information of a specific quote")]
-        public Quote? GetQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public QuoteEntity GetQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Quote ID")] string quoteId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/quotes/{quoteId}", Method.Get, authenticationCredentialsProviders);
-            return client.GetObject<Quote>(request);
+            
+            var response = client.GetFullObject<QuoteProperties>(request);
+            return new(response);
         }
 
         [Action("Get quote property", Description = "Get a specific property of a quote")]
-        public CustomProperty GetQuoteProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public CustomPropertyEntity GetQuoteProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Quote ID")] string quoteId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();
@@ -37,22 +39,22 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Set quote property", Description = "Set a specific property of a quote")]
-        public Models.Quote SetQuoteProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public Models.QuoteProperties SetQuoteProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Quote ID")] string quoteId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/quote/{quoteId}", Method.Patch, authenticationCredentialsProviders);
-            return client.SetProperty<Models.Quote>(request, property, value);
+            return client.SetProperty<Models.QuoteProperties>(request, property, value);
         }
 
         [Action("Create quote", Description = "Create a new quote")]
         public BaseObject? CreateQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] Quote quote)
+            [ActionParameter] QuoteProperties quote)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/quotes", Method.Post, authenticationCredentialsProviders);
             request.AddObject(quote);
-            return client.PostObject(request);
+            return client.GetFullObject<QuoteProperties>(request);
         }
 
         [Action("Delete quote", Description = "Delete a quote")]

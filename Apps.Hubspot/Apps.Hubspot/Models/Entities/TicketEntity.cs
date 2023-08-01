@@ -1,8 +1,8 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.Hubspot.Crm.Outputs
+namespace Apps.Hubspot.Crm.Models.Entities
 {
-    public class Ticket
+    public class TicketEntity
     {
         [Display("ID")]
         public string? Id { get; set; }

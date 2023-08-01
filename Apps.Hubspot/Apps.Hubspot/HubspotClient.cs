@@ -1,7 +1,7 @@
 ﻿using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Models;
+using Apps.Hubspot.Crm.Models.Entities;
 using Apps.Hubspot.Crm.Models.Pagination;
-using Apps.Hubspot.Crm.Outputs;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using RestSharp;
@@ -28,12 +28,12 @@ namespace Apps.Hubspot.Crm
         public T PatchObject<T>(HubspotRequest request) =>
             ExecuteWithError<BaseObjectWithProperties<T>>(request).Properties;
 
-        public CustomProperty GetProperty(HubspotRequest request, string name)
+        public CustomPropertyEntity GetProperty(HubspotRequest request, string name)
         {
             request.AddQueryParameter("properties", name.ToApiPropertyName());
             var res = ExecuteWithError<ObjectWithCustomProperties>(request);
             var property = res?.Properties?[name.ToApiPropertyName()];
-            return new CustomProperty { Property = property };
+            return new CustomPropertyEntity { Property = property };
         }
 
         public T SetProperty<T>(HubspotRequest request, string name, string value)
@@ -55,6 +55,9 @@ namespace Apps.Hubspot.Crm
 
             if (!res.IsSuccessStatusCode)
             {
+                if (res.ContentType is "text/html")
+                    throw new(res.StatusDescription);
+                
                 var error = JsonConvert.DeserializeObject<Error>(res.Content);
                 throw new Exception(error?.ToString());
             }

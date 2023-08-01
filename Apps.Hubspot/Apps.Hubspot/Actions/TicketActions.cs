@@ -1,4 +1,4 @@
-﻿using Apps.Hubspot.Crm.Outputs;
+﻿using Apps.Hubspot.Crm.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
@@ -10,14 +10,14 @@ namespace Apps.Hubspot.Crm.Actions
     public class TicketActions
     {
         [Action("Get ticket", Description = "Get information of a specific ticket")]
-        public Outputs.Ticket? GetTicket(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public TicketEntity? GetTicket(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Ticket ID")] string ticketId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/tickets/{ticketId}", Method.Get, authenticationCredentialsProviders);
             request.AddQueryParameter("associations", "companies");
             var response = client.GetFullObject<Models.Ticket>(request);
-            return new Outputs.Ticket
+            return new TicketEntity
             {
                 Id = response.Id,
                 Description = response.Properties.Content,
@@ -28,7 +28,7 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Get ticket property", Description = "Get a specific property of a ticket")]
-        public CustomProperty GetTicketProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public CustomPropertyEntity GetTicketProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Ticket ID")] string ticketId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();

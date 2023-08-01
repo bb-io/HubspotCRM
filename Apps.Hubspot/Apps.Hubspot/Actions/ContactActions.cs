@@ -3,7 +3,7 @@ using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
 using Apps.Hubspot.Crm.Models;
-using Apps.Hubspot.Crm.Outputs;
+using Apps.Hubspot.Crm.Models.Entities;
 
 namespace Apps.Hubspot.Crm.Actions
 {
@@ -19,17 +19,19 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Get contact", Description = "Get information of a specific contact")]
-        public Contact? GetContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public ContactEntity GetContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Contact ID")] string contactId)
         {
             var client = new HubspotClient();
             var properties = new[] { "firstname", "lastname", "email", "phone", "company", "website", "jobtitle" };
             var request = new HubspotRequest($"/crm/v3/objects/contacts/{contactId}?properties={string.Join(',', properties)}", Method.Get, authenticationCredentialsProviders);
-            return client.GetObject<Contact>(request);
+           
+            var response = client.GetFullObject<ContactProperties>(request);
+            return new(response);
         }
 
         [Action("Get contact property", Description = "Get a specific property of a contact")]
-        public CustomProperty GetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public CustomPropertyEntity GetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Contact ID")] string contactId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();
@@ -38,17 +40,17 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Set contact property", Description = "Set a specific property of a contact")]
-        public Models.Contact SetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public Models.ContactProperties SetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Contact ID")] string contactId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/contact/{contactId}", Method.Patch, authenticationCredentialsProviders);
-            return client.SetProperty<Models.Contact>(request, property, value);
+            return client.SetProperty<Models.ContactProperties>(request, property, value);
         }
 
         [Action("Create contact", Description = "Create a new contact")]
         public BaseObject? CreateContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] Contact contact)
+            [ActionParameter] ContactProperties contact)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/contacts", Method.Post, authenticationCredentialsProviders);

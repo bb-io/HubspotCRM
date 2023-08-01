@@ -3,7 +3,7 @@ using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
 using Apps.Hubspot.Crm.Models;
-using Apps.Hubspot.Crm.Outputs;
+using Apps.Hubspot.Crm.Models.Entities;
 
 namespace Apps.Hubspot.Crm.Actions
 {
@@ -19,16 +19,18 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Get deal", Description = "Get information of a specific deal")]
-        public Deal? GetDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public DealEntity GetDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Deal ID")] string dealId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Get, authenticationCredentialsProviders);
-            return client.GetObject<Deal>(request);
+            
+            var response = client.GetFullObject<DealProperties>(request);
+            return new(response);
         }
 
         [Action("Get deal property", Description = "Get a specific property of a deal")]
-        public CustomProperty GetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public CustomPropertyEntity GetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Deal ID")] string dealId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();
@@ -37,17 +39,17 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Set deal property", Description = "Set a specific property of a deal")]
-        public Models.Deal SetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public Models.DealProperties SetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Deal ID")] string dealId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Patch, authenticationCredentialsProviders);
-            return client.SetProperty<Models.Deal>(request, property, value);
+            return client.SetProperty<Models.DealProperties>(request, property, value);
         }
 
         [Action("Create deal", Description = "Create a new deal")]
         public BaseObject? CreateDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] Deal deal)
+            [ActionParameter] DealProperties deal)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals", Method.Post, authenticationCredentialsProviders);
