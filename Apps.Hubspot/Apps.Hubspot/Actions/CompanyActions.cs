@@ -27,7 +27,7 @@ namespace Apps.Hubspot.Crm.Actions
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
             request.AddQueryParameter("associations", "contacts");
-            var response = client.GetFullObject<Models.Company>(request);
+            var response = client.GetFullObject<Company>(request);
             return new CompanyEntity
             {
                 Id = response.Id,
@@ -91,17 +91,17 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Set company property", Description = "Set a specific property of a company")]
-        public Models.Company SetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public Company SetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Company ID")] string companyId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Patch, authenticationCredentialsProviders);
-            return client.SetProperty<Models.Company>(request, property, value);
+            return client.SetProperty<Company>(request, property, value);
         }
 
         [Action("Create company", Description = "Create a new company")]
         public BaseObject? CreateCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, 
-            [ActionParameter] Models.Company company)
+            [ActionParameter] Company company)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies", Method.Post, authenticationCredentialsProviders);

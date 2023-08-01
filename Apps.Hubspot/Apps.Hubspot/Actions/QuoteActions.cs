@@ -39,12 +39,12 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Set quote property", Description = "Set a specific property of a quote")]
-        public Models.QuoteProperties SetQuoteProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public QuoteProperties SetQuoteProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Quote ID")] string quoteId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/quote/{quoteId}", Method.Patch, authenticationCredentialsProviders);
-            return client.SetProperty<Models.QuoteProperties>(request, property, value);
+            return client.SetProperty<QuoteProperties>(request, property, value);
         }
 
         [Action("Create quote", Description = "Create a new quote")]

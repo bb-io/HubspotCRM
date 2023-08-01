@@ -40,12 +40,12 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Set contact property", Description = "Set a specific property of a contact")]
-        public Models.ContactProperties SetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public ContactProperties SetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Contact ID")] string contactId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/contact/{contactId}", Method.Patch, authenticationCredentialsProviders);
-            return client.SetProperty<Models.ContactProperties>(request, property, value);
+            return client.SetProperty<ContactProperties>(request, property, value);
         }
 
         [Action("Create contact", Description = "Create a new contact")]

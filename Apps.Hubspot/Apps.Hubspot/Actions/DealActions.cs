@@ -39,12 +39,12 @@ namespace Apps.Hubspot.Crm.Actions
         }
 
         [Action("Set deal property", Description = "Set a specific property of a deal")]
-        public Models.DealProperties SetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public DealProperties SetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter][Display("Deal ID")] string dealId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Patch, authenticationCredentialsProviders);
-            return client.SetProperty<Models.DealProperties>(request, property, value);
+            return client.SetProperty<DealProperties>(request, property, value);
         }
 
         [Action("Create deal", Description = "Create a new deal")]

@@ -57,8 +57,8 @@ namespace Apps.Hubspot.Crm.Actions
         public TicketProperties SetTicketProperty(
             IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] [Display("Ticket ID")]
-            string ticketId, [ActionParameter] [Display("Property")] string property,
-            [ActionParameter] [Display("Property")] string value)
+            string ticketId, [ActionParameter] [Display("Property name")] string property,
+            [ActionParameter] [Display("Property value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/ticket/{ticketId}", Method.Patch,
