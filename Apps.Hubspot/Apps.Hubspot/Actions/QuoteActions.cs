@@ -52,10 +52,10 @@ namespace Apps.Hubspot.Crm.Actions
             [ActionParameter] QuoteProperties quote)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/quotes", Method.Post, authenticationCredentialsProviders);
+            var request = new HubspotRequest("/crm/v3/objects/quotes", Method.Post, authenticationCredentialsProviders);
             request.AddObject(new
             {
-                hs_title = quote.hs_title,
+                quote.hs_title,
                 hs_expiration_date = ((DateTimeOffset)quote.hs_expiration_date).ToUnixTimeSeconds()
             });
             
