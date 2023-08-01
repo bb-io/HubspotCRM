@@ -23,7 +23,7 @@ namespace Apps.Hubspot.Crm.Actions
                 Description = response.Properties.Content,
                 Subject = response.Properties.Subject,
                 Priority = response.Properties.hs_ticket_priority,
-                CompanyId = response.Associations?["companies"].GetSingleId()
+                CompanyIds = response.Associations?["companies"].GetDistinctIds()
             };
         }
 

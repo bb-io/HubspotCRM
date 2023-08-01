@@ -10,7 +10,7 @@ namespace Apps.Hubspot.Crm.Outputs
         public string? Description { get; set; }
 
         [Display("Company ID")]
-        public string? CompanyId { get; set; }
+        public IEnumerable<string>? CompanyIds { get; set; }
         public string? Priority { get; set; }
     }
 }

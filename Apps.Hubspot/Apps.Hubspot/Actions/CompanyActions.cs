@@ -1,4 +1,5 @@
-﻿using Apps.Hubspot.Crm.Models;
+﻿using Apps.Hubspot.Crm.Extensions;
+using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Outputs;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
