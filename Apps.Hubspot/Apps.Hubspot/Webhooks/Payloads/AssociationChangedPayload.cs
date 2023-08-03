@@ -1,8 +1,8 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.Hubspot.Crm.Webhooks.Payloads.Company;
+namespace Apps.Hubspot.Crm.Webhooks.Payloads;
 
-public class CompanyAssociationChangedPayload : GenericPayload
+public class AssociationChangedPayload : GenericPayload
 {
     [Display("Source object ID")]
     public string FromObjectId { get; set; }

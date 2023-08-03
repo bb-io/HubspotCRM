@@ -1,8 +1,8 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.Hubspot.Crm.Webhooks.Payloads.Company;
+namespace Apps.Hubspot.Crm.Webhooks.Payloads;
 
-public class CompanyPropertyChangedPayload : GenericPayload
+public class PropertyChangedPayload : GenericPayload
 {
     [Display("Property name")]
     public string PropertyName { get; set; }  

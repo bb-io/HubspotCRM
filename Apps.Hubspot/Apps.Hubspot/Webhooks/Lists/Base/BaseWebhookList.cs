@@ -1,4 +1,7 @@
-﻿using Blackbird.Applications.Sdk.Common.Webhooks;
+﻿using System.Net;
+using Apps.Hubspot.Crm.Webhooks.Inputs;
+using Apps.Hubspot.Crm.Webhooks.Payloads;
+using Blackbird.Applications.Sdk.Common.Webhooks;
 using Newtonsoft.Json;
 
 namespace Apps.Hubspot.Crm.Webhooks.Lists.Base;
@@ -11,6 +14,27 @@ public class BaseWebhookList
                    ?? throw new InvalidCastException(nameof(webhookRequest.Body));
 
         return Task.FromResult(new WebhookResponse<T>
+        {
+            HttpResponseMessage = null,
+            Result = data
+        });
+    }
+
+    protected Task<WebhookResponse<PropertyChangedPayload>> HandlePropertyChangedWebhookResponse(
+        WebhookRequest webhookRequest,
+        [WebhookParameter] PropertyChangedInput input)
+    {
+        var data = JsonConvert.DeserializeObject<PropertyChangedPayload>(webhookRequest.Body.ToString())
+                   ?? throw new InvalidCastException(nameof(webhookRequest.Body));
+
+        if (input.Property is not null && input.Property != data.PropertyName)
+            return Task.FromResult(new WebhookResponse<PropertyChangedPayload>
+            {
+                HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK),
+                ReceivedWebhookRequestType = WebhookRequestType.Preflight
+            });
+
+        return Task.FromResult(new WebhookResponse<PropertyChangedPayload>
         {
             HttpResponseMessage = null,
             Result = data
