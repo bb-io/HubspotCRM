@@ -26,8 +26,9 @@ public class LineItems : BaseWebhookList
         => HandleWebhookResponse<GenericPayload>(webhookRequest);
     
     [Webhook("On line item association changed", typeof(LineItemAssociationChangedHandler), Description = "On line item association changed")]
-    public Task<WebhookResponse<AssociationChangedPayload>> OnLineItemAssociationChanged(WebhookRequest webhookRequest)
-        => HandleWebhookResponse<AssociationChangedPayload>(webhookRequest);
+    public Task<WebhookResponse<AssociationChangedPayload>> OnLineItemAssociationChanged(
+        WebhookRequest webhookRequest, [WebhookParameter] AssociationChangedInput input)
+        => HandleAssociationChangedWebhookResponse(webhookRequest, input);
 
     [Webhook("On line item property changed", typeof(LineItemPropertyChangedHandler),
         Description = "On line item property changed")]

@@ -28,8 +28,8 @@ namespace Apps.Hubspot.Crm.Webhooks.Lists
         [Webhook("On ticket association changed", typeof(TicketAssociationChangedHandler),
             Description = "On ticket association changed")]
         public Task<WebhookResponse<AssociationChangedPayload>> OnTicketAssociationChanged(
-            WebhookRequest webhookRequest)
-            => HandleWebhookResponse<AssociationChangedPayload>(webhookRequest);
+            WebhookRequest webhookRequest, [WebhookParameter] AssociationChangedInput input)
+            => HandleAssociationChangedWebhookResponse(webhookRequest, input);
 
         [Webhook("On ticket property changed", typeof(TicketPropertyChangedHandler),
             Description = "On ticket property changed")]

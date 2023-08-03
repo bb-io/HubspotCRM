@@ -22,8 +22,9 @@ namespace Apps.Hubspot.Crm.Webhooks.Lists
             => HandleWebhookResponse<AssociationChangedPayload>(webhookRequest);
 
         [Webhook("On contact association changed", typeof(ContactAssociationChangedHandler), Description = "On contact association changed")]
-        public Task<WebhookResponse<AssociationChangedPayload>> OnContactAssociationChanged(WebhookRequest webhookRequest)
-            => HandleWebhookResponse<AssociationChangedPayload>(webhookRequest);
+        public Task<WebhookResponse<AssociationChangedPayload>> OnContactAssociationChanged(
+            WebhookRequest webhookRequest, [WebhookParameter] AssociationChangedInput input)
+            => HandleAssociationChangedWebhookResponse(webhookRequest, input);
 
         [Webhook("On contact restored", typeof(ContactRestoredHandler), Description = "On contact restored")]
         public Task<WebhookResponse<GenericPayload>> OnContactRestored(WebhookRequest webhookRequest)

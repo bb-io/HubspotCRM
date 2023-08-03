@@ -40,4 +40,25 @@ public class BaseWebhookList
             Result = data
         });
     }
+    protected Task<WebhookResponse<AssociationChangedPayload>> HandleAssociationChangedWebhookResponse(
+        WebhookRequest webhookRequest,
+        [WebhookParameter] AssociationChangedInput input)
+    {
+        var data = JsonConvert.DeserializeObject<AssociationChangedPayload>(webhookRequest.Body.ToString())
+                   ?? throw new InvalidCastException(nameof(webhookRequest.Body));
+
+        if (input.AssociationType is not null &&
+            !input.AssociationType.Equals(data.AssociationType, StringComparison.OrdinalIgnoreCase))
+            return Task.FromResult(new WebhookResponse<AssociationChangedPayload>
+            {
+                HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK),
+                ReceivedWebhookRequestType = WebhookRequestType.Preflight
+            });
+
+        return Task.FromResult(new WebhookResponse<AssociationChangedPayload>
+        {
+            HttpResponseMessage = null,
+            Result = data
+        });
+    }
 }

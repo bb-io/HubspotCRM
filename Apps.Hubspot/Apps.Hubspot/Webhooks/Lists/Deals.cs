@@ -27,8 +27,9 @@ namespace Apps.Hubspot.Crm.Webhooks.Lists
 
         [Webhook("On deal association changed", typeof(DealAssociationChangedHandler),
             Description = "On deal association changed")]
-        public Task<WebhookResponse<AssociationChangedPayload>> OnDealAssociationChanged(WebhookRequest webhookRequest)
-            => HandleWebhookResponse<AssociationChangedPayload>(webhookRequest);
+        public Task<WebhookResponse<AssociationChangedPayload>> OnDealAssociationChanged(
+            WebhookRequest webhookRequest, [WebhookParameter] AssociationChangedInput input)
+            => HandleAssociationChangedWebhookResponse(webhookRequest, input);
 
         [Webhook("On deal property changed", typeof(DealPropertyChangedHandler),
             Description = "On deal property changed")]
