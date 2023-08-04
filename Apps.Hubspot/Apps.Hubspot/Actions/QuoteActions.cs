@@ -56,7 +56,7 @@ namespace Apps.Hubspot.Crm.Actions
             request.AddObject(new
             {
                 quote.hs_title,
-                hs_expiration_date = ((DateTimeOffset)quote.hs_expiration_date).ToUnixTimeSeconds()
+                hs_expiration_date = quote.hs_expiration_date
             });
             
             return client.GetFullObject<QuoteProperties>(request);
