@@ -27,7 +27,8 @@ public class BaseWebhookList
         var data = JsonConvert.DeserializeObject<PropertyChangedPayload>(webhookRequest.Body.ToString())
                    ?? throw new InvalidCastException(nameof(webhookRequest.Body));
 
-        if (input.Property is not null && input.Property != data.PropertyName)
+        if (input.Property is not null &&
+            !input.Property.Equals(data.PropertyName, StringComparison.OrdinalIgnoreCase))
             return Task.FromResult(new WebhookResponse<PropertyChangedPayload>
             {
                 HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK),

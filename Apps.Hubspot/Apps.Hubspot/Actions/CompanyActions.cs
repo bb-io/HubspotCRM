@@ -15,12 +15,13 @@ namespace Apps.Hubspot.Crm.Actions
     [ActionList]
     public class CompanyActions
     {
-
         [Action("Get all companies", Description = "Get a list of all companies")]
-        public IEnumerable<BaseObject> GetCompanies(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
+        public IEnumerable<BaseObject> GetCompanies(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest("/crm/v3/objects/companies", Method.Get, authenticationCredentialsProviders);
+            var request = new HubspotRequest("/crm/v3/objects/companies", Method.Get,
+                authenticationCredentialsProviders);
             return client.GetMultipleObjects(request);
         }
 
@@ -29,7 +30,8 @@ namespace Apps.Hubspot.Crm.Actions
             [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
+            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get,
+                authenticationCredentialsProviders);
             request.AddQueryParameter("associations", "contacts");
             var response = client.GetFullObject<Company>(request);
             return new CompanyEntity
@@ -37,16 +39,19 @@ namespace Apps.Hubspot.Crm.Actions
                 Id = response.Id,
                 Name = response.Properties.Name,
                 Domain = response.Properties.Domain,
-                ContactIds = response.Associations?["contacts"].GetDistinctIds().Select(c => new ContactId() { Id = c }),
+                ContactIds =
+                    response.Associations?["contacts"].GetDistinctIds().Select(c => new ContactId() { Id = c }),
             };
         }
 
         [Action("Get company by custom property", Description = "Get company by custom property value")]
-        public CompanyEntity GetCompanyByCustomValue(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        public CompanyEntity GetCompanyByCustomValue(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] GetCompanyByCustomValueRequest input)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/companies/search", Method.Post, authenticationCredentialsProviders);
+            var request = new HubspotRequest($"/crm/v3/objects/companies/search", Method.Post,
+                authenticationCredentialsProviders);
             request.AddJsonBody(new
             {
                 filterGroups = new[]
@@ -73,7 +78,8 @@ namespace Apps.Hubspot.Crm.Actions
             [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
+            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get,
+                authenticationCredentialsProviders);
             return client.GetProperty(request, property);
         }
 
@@ -82,7 +88,8 @@ namespace Apps.Hubspot.Crm.Actions
             [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
+            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get,
+                authenticationCredentialsProviders);
             return new GetCompanyAddressResponse()
             {
                 StreetAddress1 = client.GetProperty(request, "address").Property,
@@ -99,16 +106,19 @@ namespace Apps.Hubspot.Crm.Actions
             [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Patch, authenticationCredentialsProviders);
+            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Patch,
+                authenticationCredentialsProviders);
             return client.SetProperty<Company>(request, property, value);
         }
 
         [Action("Create company", Description = "Create a new company")]
-        public BaseObject? CreateCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, 
+        public BaseObject? CreateCompany(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] Company company)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/companies", Method.Post, authenticationCredentialsProviders);
+            var request = new HubspotRequest($"/crm/v3/objects/companies", Method.Post,
+                authenticationCredentialsProviders);
             request.AddObject(company);
             return client.PostObject(request);
         }
@@ -118,7 +128,8 @@ namespace Apps.Hubspot.Crm.Actions
             [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId)
         {
             var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Delete, authenticationCredentialsProviders);
+            var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Delete,
+                authenticationCredentialsProviders);
             client.Execute(request);
         }
     }
