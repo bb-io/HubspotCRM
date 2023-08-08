@@ -4,6 +4,8 @@ using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
 using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Entities;
+using Apps.Hubspot.Crm.DynamicHandlers;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.Hubspot.Crm.Actions
 {
@@ -20,7 +22,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get deal", Description = "Get information of a specific deal")]
         public DealEntity GetDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Deal ID")] string dealId)
+            [ActionParameter][Display("Deal ID")][DataSource(typeof(DealHandler))] string dealId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Get, authenticationCredentialsProviders);
@@ -31,7 +33,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get deal property", Description = "Get a specific property of a deal")]
         public CustomPropertyEntity GetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Deal ID")] string dealId, [ActionParameter][Display("Property")] string property)
+            [ActionParameter][Display("Deal ID")][DataSource(typeof(DealHandler))] string dealId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Get, authenticationCredentialsProviders);
@@ -40,7 +42,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Set deal property", Description = "Set a specific property of a deal")]
         public DealProperties SetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Deal ID")] string dealId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
+            [ActionParameter][Display("Deal ID")][DataSource(typeof(DealHandler))] string dealId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Patch, authenticationCredentialsProviders);
@@ -59,7 +61,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Delete deal", Description = "Delete a deal")]
         public void DeleteDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Deal ID")] string dealId)
+            [ActionParameter][Display("Deal ID")][DataSource(typeof(DealHandler))] string dealId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Delete, authenticationCredentialsProviders);

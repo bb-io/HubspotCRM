@@ -1,10 +1,14 @@
-﻿using Apps.Hubspot.Crm.Extensions;
+﻿using Apps.Hubspot.Crm.DynamicHandlers;
+using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Entities;
+using Apps.Hubspot.Crm.Models.Pagination;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 using RestSharp;
+using System.Xml.Linq;
 
 namespace Apps.Hubspot.Crm.Actions
 {
@@ -22,7 +26,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get company", Description = "Get information of a specific company")]
         public CompanyEntity GetCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Company ID")] string companyId)
+            [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
@@ -66,7 +70,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get company property", Description = "Get a specific property of a company")]
         public CustomPropertyEntity GetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Company ID")] string companyId, [ActionParameter][Display("Property")] string property)
+            [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId, [ActionParameter][Display("Property")] string property)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
@@ -75,7 +79,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Get company address", Description = "Get company address")]
         public GetCompanyAddressResponse GetCompanyAddress(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Company ID")] string companyId)
+            [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Get, authenticationCredentialsProviders);
@@ -92,7 +96,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Set company property", Description = "Set a specific property of a company")]
         public Company SetCompanyProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Company ID")] string companyId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
+            [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Patch, authenticationCredentialsProviders);
@@ -111,7 +115,7 @@ namespace Apps.Hubspot.Crm.Actions
 
         [Action("Delete company", Description = "Delete a company")]
         public void DeleteCompany(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Company ID")] string companyId)
+            [ActionParameter][Display("Company ID")][DataSource(typeof(CompanyHandler))] string companyId)
         {
             var client = new HubspotClient();
             var request = new HubspotRequest($"/crm/v3/objects/companies/{companyId}", Method.Delete, authenticationCredentialsProviders);
