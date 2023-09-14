@@ -1,4 +1,6 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using Apps.Hubspot.Crm.Models.Deals.Response;
+using Apps.Hubspot.Crm.Models.Entities.Base;
+using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.Hubspot.Crm.Models.Entities;
 

@@ -1,7 +1,6 @@
-﻿namespace Apps.Hubspot.Crm.Models.Entities
+﻿namespace Apps.Hubspot.Crm.Models.Entities;
+
+public class CustomPropertyEntity
 {
-    public class CustomPropertyEntity
-    {
-        public string? Property { get; set; }
-    }
+    public string? Property { get; set; }
 }

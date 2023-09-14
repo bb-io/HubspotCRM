@@ -1,9 +1,8 @@
-﻿namespace Apps.Hubspot.Crm.Webhooks.Payloads
-{
-    public class BridgeGetResponse
-    {
-        public string Id { get; set; }
+﻿namespace Apps.Hubspot.Crm.Webhooks.Payloads;
 
-        public string Value { get; set; }
-    }
+public class BridgeGetResponse
+{
+    public string Id { get; set; }
+
+    public string Value { get; set; }
 }

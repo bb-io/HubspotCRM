@@ -1,10 +1,9 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.Hubspot.Crm.Webhooks.Payloads
+namespace Apps.Hubspot.Crm.Webhooks.Payloads;
+
+public class GenericPayload
 {
-    public class GenericPayload
-    {
-        [Display("ID")]
-        public string ObjectId { get; set; }
-    }
+    [Display("ID")]
+    public string ObjectId { get; set; }
 }

@@ -1,9 +1,8 @@
-﻿namespace Apps.Hubspot.Crm.Webhooks.Handlers.Deal
-{
-    public class DealCreationHandler : BaseWebhookHandler
-    {
-        const string SubscriptionEvent = "deal.creation";
+﻿namespace Apps.Hubspot.Crm.Webhooks.Handlers.Deal;
 
-        public DealCreationHandler() : base(SubscriptionEvent) { }
-    }
+public class DealCreationHandler : BaseWebhookHandler
+{
+    const string SubscriptionEvent = "deal.creation";
+
+    public DealCreationHandler() : base(SubscriptionEvent) { }
 }

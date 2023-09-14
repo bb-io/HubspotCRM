@@ -1,72 +1,86 @@
-﻿using Blackbird.Applications.Sdk.Common;
-using Blackbird.Applications.Sdk.Common.Authentication;
+﻿using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Invocables;
+using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
 using Apps.Hubspot.Crm.Models;
+using Apps.Hubspot.Crm.Models.Contacts.Request;
+using Apps.Hubspot.Crm.Models.Contacts.Response;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.DynamicHandlers;
-using Blackbird.Applications.Sdk.Common.Dynamic;
+using Apps.Hubspot.Crm.Models.Entities.Base;
+using Apps.Hubspot.Crm.Models.Properties.Request;
+using Blackbird.Applications.Sdk.Common.Invocation;
 
-namespace Apps.Hubspot.Crm.Actions
+namespace Apps.Hubspot.Crm.Actions;
+
+[ActionList]
+public class ContactActions : HubspotInvocable
 {
-    [ActionList]
-    public class ContactActions
+    public ContactActions(InvocationContext invocationContext) : base(invocationContext)
     {
-        [Action("Get all contacts", Description = "Get a list of all contacts")]
-        public IEnumerable<BaseObject> GetContacts(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
-        {
-            var client = new HubspotClient();
-            var request = new HubspotRequest("/crm/v3/objects/contacts", Method.Get, authenticationCredentialsProviders);
-            return client.GetMultipleObjects(request);
-        }
+    }
 
-        [Action("Get contact", Description = "Get information of a specific contact")]
-        public ContactEntity GetContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Contact ID")][DataSource(typeof(ContactHandler))] string contactId)
-        {
-            var client = new HubspotClient();
-            var properties = new[] { "firstname", "lastname", "email", "phone", "company", "website", "jobtitle" };
-            var request = new HubspotRequest($"/crm/v3/objects/contacts/{contactId}?properties={string.Join(',', properties)}", Method.Get, authenticationCredentialsProviders);
-           
-            var response = client.GetFullObject<ContactProperties>(request);
-            return new(response);
-        }
+    [Action("Get all contacts", Description = "Get a list of all contacts")]
+    public async Task<ListItemsResponse> GetContacts()
+    {
+        var request = new HubspotRequest("/crm/v3/objects/contacts", Method.Get, Creds);
 
-        [Action("Get contact property", Description = "Get a specific property of a contact")]
-        public CustomPropertyEntity GetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Contact ID")][DataSource(typeof(ContactHandler))] string contactId, [ActionParameter][Display("Property")] string property)
-        {
-            var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/contacts/{contactId}", Method.Get, authenticationCredentialsProviders);
-            return client.GetProperty(request, property);
-        }
+        var response = await Client.GetMultipleObjects(request);
+        return new(response);
+    }
 
-        [Action("Set contact property", Description = "Set a specific property of a contact")]
-        public ContactProperties SetContactProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Contact ID")][DataSource(typeof(ContactHandler))] string contactId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
-        {
-            var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/contact/{contactId}", Method.Patch, authenticationCredentialsProviders);
-            return client.SetProperty<ContactProperties>(request, property, value);
-        }
+    [Action("Get contact", Description = "Get information of a specific contact")]
+    public async Task<ContactEntity> GetContact([ActionParameter] ContactRequest contact)
+    {
+        var properties = new[] { "firstname", "lastname", "email", "phone", "company", "website", "jobtitle" };
+        var endpoint = $"/crm/v3/objects/contacts/{contact.ContactId}?properties={string.Join(',', properties)}";
 
-        [Action("Create contact", Description = "Create a new contact")]
-        public BaseObject? CreateContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] ContactProperties contact)
-        {
-            var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/contacts", Method.Post, authenticationCredentialsProviders);
-            request.AddObject(contact);
-            return client.PostObject(request);
-        }
+        var request = new HubspotRequest(endpoint, Method.Get, Creds);
 
-        [Action("Delete contact", Description = "Delete a contact")]
-        public void DeleteContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter][Display("Contact ID")][DataSource(typeof(ContactHandler))] string contactId)
-        {
-            var client = new HubspotClient();
-            var request = new HubspotRequest($"/crm/v3/objects/contacts/{contactId}", Method.Delete, authenticationCredentialsProviders);
-            client.Execute(request);
-        }
+        var response = await Client.GetFullObject<ContactProperties>(request);
+        return new(response);
+    }
+
+    [Action("Get contact property", Description = "Get a specific property of a contact")]
+    public Task<CustomPropertyEntity> GetContactProperty(
+        [ActionParameter] ContactRequest contact,
+        [ActionParameter] GetPropertyRequest property)
+    {
+        var endpoint = $"/crm/v3/objects/contacts/{contact.ContactId}";
+        var request = new HubspotRequest(endpoint, Method.Get, Creds);
+
+        return Client.GetProperty(request, property.Property);
+    }
+
+    [Action("Set contact property", Description = "Set a specific property of a contact")]
+    public async Task<ContactEntity> SetContactProperty(
+        [ActionParameter] ContactRequest contact,
+        [ActionParameter] SetPropertyRequest property)
+    {
+        var endpoint = $"/crm/v3/objects/contacts/{contact.ContactId}";
+        var request = new HubspotRequest(endpoint, Method.Patch, Creds);
+
+        var response = await Client
+            .SetProperty<ContactProperties>(request, property.Property, property.Value);
+
+        return new(response);
+    }
+
+    [Action("Create contact", Description = "Create a new contact")]
+    public Task<BaseObject> CreateContact([ActionParameter] ContactProperties contact)
+    {
+        var request = new HubspotRequest("/crm/v3/objects/contacts", Method.Post, Creds)
+            .AddObject(contact);
+
+        return Client.PostObject(request);
+    }
+
+    [Action("Delete contact", Description = "Delete a contact")]
+    public Task DeleteContact([ActionParameter] ContactRequest contact)
+    {
+        var endpoint = $"/crm/v3/objects/contacts/{contact.ContactId}";
+        var request = new HubspotRequest(endpoint, Method.Delete, Creds);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 }

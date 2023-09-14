@@ -1,35 +1,46 @@
-﻿using Apps.Hubspot.Crm.Webhooks.Bridge;
+﻿using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Models.Entities;
 using Blackbird.Applications.Sdk.Common.Authentication;
-using Blackbird.Applications.Sdk.Common.Webhooks;
+using Blackbird.Applications.Sdk.Utils.Webhooks.Bridge;
+using Blackbird.Applications.Sdk.Utils.Webhooks.Bridge.Models.Request;
+using RestSharp;
 
-namespace Apps.Hubspot.Crm.Webhooks.Handlers
+namespace Apps.Hubspot.Crm.Webhooks.Handlers;
+
+public class BaseWebhookHandler : BridgeWebhookHandler
 {
-    public class BaseWebhookHandler : IWebhookEventHandler
+    private readonly string _subscriptionEvent;
+
+    protected BaseWebhookHandler(string subEvent)
     {
+        _subscriptionEvent = subEvent;
+    }
 
-        //const string SubscriptionEvent = "contact.propertyChange";
-        //const string PropertyName = "email";
-
-        private string SubscriptionEvent;
-
-        //private string PropertyName;
-
-        public BaseWebhookHandler(string subEvent)
+    protected override (BridgeRequest webhookData, BridgeCredentials bridgeCreds) GetBridgeServiceInputs(
+        Dictionary<string, string> values, IEnumerable<AuthenticationCredentialsProvider> creds)
+    {
+        var webhookData = new BridgeRequest
         {
-            SubscriptionEvent = subEvent;
-            //PropertyName = propertyName;
-        }
+            Event = _subscriptionEvent,
+            Id = GetPortalId(creds),
+            Url = values["payloadUrl"],
+        };
 
-        public async Task SubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, Dictionary<string, string> values)
+        var bridgeCreds = new BridgeCredentials
         {
-            var bridge = new BridgeService(authenticationCredentialsProviders);
-            bridge.Subscribe(SubscriptionEvent, values["payloadUrl"]);
-        }
+            ServiceUrl = ApplicationConstants.BridgeServiceUrl,
+            Token = ApplicationConstants.BlackbirdToken
+        };
 
-        public async Task UnsubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, Dictionary<string, string> values)
-        {
-            var bridge = new BridgeService(authenticationCredentialsProviders);
-            bridge.Unsubscribe(SubscriptionEvent, values["payloadUrl"]);
-        }
+        return (webhookData, bridgeCreds);
+    }
+
+    private string GetPortalId(IEnumerable<AuthenticationCredentialsProvider> creds)
+    {
+        var client = new HubspotClient();
+        var detailsRequest = new HubspotRequest("/account-info/v3/details", Method.Get, creds);
+        var details = client.ExecuteWithErrorHandling<AccountEntity>(detailsRequest).Result;
+
+        return details?.PortalId ?? throw new Exception("Could not fetch account details");
     }
 }

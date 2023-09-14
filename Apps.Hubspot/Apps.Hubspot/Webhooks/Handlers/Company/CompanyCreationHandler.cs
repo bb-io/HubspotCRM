@@ -1,9 +1,8 @@
-﻿namespace Apps.Hubspot.Crm.Webhooks.Handlers.Company
-{
-    public class CompanyCreationHandler : BaseWebhookHandler
-    {
-        const string SubscriptionEvent = "company.creation";
+﻿namespace Apps.Hubspot.Crm.Webhooks.Handlers.Company;
 
-        public CompanyCreationHandler() : base(SubscriptionEvent) { }
-    }
+public class CompanyCreationHandler : BaseWebhookHandler
+{
+    const string SubscriptionEvent = "company.creation";
+
+    public CompanyCreationHandler() : base(SubscriptionEvent) { }
 }

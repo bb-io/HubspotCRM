@@ -1,23 +1,22 @@
-﻿namespace Apps.Hubspot.Crm.Models
+﻿namespace Apps.Hubspot.Crm.Models;
+
+public class Error
 {
-    public class Error
-    {
-        public string Status { get; set; }
-        public string Message { get; set; }
-        public string Category { get; set; }
-        public List<SubError> Errors { get; set; }
+    public string Status { get; set; }
+    public string Message { get; set; }
+    public string Category { get; set; }
+    public List<SubError> Errors { get; set; }
 
-        public override string ToString()
-        {
-            if (Errors == null)
-                return Message;
-            return $"{Message}: ${string.Join(" - ", Errors.Select(x => x.Message))}";
-        }
-    }
-
-    public class SubError
+    public override string ToString()
     {
-        public string SubCategory { get; set; }
-        public string Message { get; set; }
+        if (Errors == null)
+            return Message;
+        return $"{Message}: ${string.Join(" - ", Errors.Select(x => x.Message))}";
     }
+}
+
+public class SubError
+{
+    public string SubCategory { get; set; }
+    public string Message { get; set; }
 }

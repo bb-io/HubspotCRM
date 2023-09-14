@@ -1,50 +1,35 @@
-﻿using Apps.Hubspot.Crm.Constants;
+﻿using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models.Associations.Request;
 using Apps.Hubspot.Crm.Models.Associations.Response;
 using Apps.Hubspot.Crm.Models.Pagination;
-using Apps.Hubspot.Crm.Utils;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
-using Blackbird.Applications.Sdk.Common.Authentication;
+using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
 
 namespace Apps.Hubspot.Crm.Actions;
 
 [ActionList]
-public class AssociationActions
+public class AssociationActions : HubspotInvocable
 {
-    #region Fields
-
-    private HubspotClient Client { get; }
-
-    #endregion
-
-    #region Constructors
-
-    public AssociationActions()
+    public AssociationActions(InvocationContext invocationContext) : base(invocationContext)
     {
-        Client = new();
     }
-
-    #endregion
 
     #region Actions
 
     [Action("Create association label", Description = "Set association labels between two records")]
-    public void CreateAssociationLabel(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] CreateAssociationLabelRequest input)
+    public Task CreateAssociationLabel([ActionParameter] CreateAssociationLabelRequest input)
     {
-        var sourceType = input.FromObjectType.ToLower();
-        var targetType = input.ToObjectType.ToLower();
-
-        if (!AreObjectTypesValid(sourceType, targetType, out var error))
-            throw new(error);
+        var sourceType = input.FromObjectType;
+        var targetType = input.ToObjectType;
 
         var endpoint =
             $"/crm/v4/objects/{sourceType}/{input.FromObjectId}/associations/{targetType}/{input.ToObjectId}";
-        var request = new HubspotRequest(endpoint, Method.Put, authenticationCredentialsProviders);
-        request.AddJsonBody(new[]
+        var request = new HubspotRequest(endpoint, Method.Put, Creds).WithJsonBody(new[]
         {
             new AssociationLabel()
             {
@@ -53,142 +38,86 @@ public class AssociationActions
             }
         });
 
-        Client.ExecuteWithError(request);
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Create association", Description = "Create association type between two object types")]
-    public void CreateAssociation(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] ManageAssociationRequest input)
+    public Task CreateAssociation([ActionParameter] ManageAssociationRequest input)
     {
-        var sourceType = input.FromObjectType.ToLower();
-        var targetType = input.ToObjectType.ToLower();
-
-        if (!AreObjectTypesValid(sourceType, targetType, out var error))
-            throw new(error);
+        var sourceType = input.FromObjectType;
+        var targetType = input.ToObjectType;
 
         var endpoint =
             $"/crm/v4/objects/{sourceType}/{input.FromObjectId}/associations/default/{targetType}/{input.ToObjectId}";
-        var request = new HubspotRequest(endpoint, Method.Put, authenticationCredentialsProviders);
+        var request = new HubspotRequest(endpoint, Method.Put, Creds);
 
-        Client.ExecuteWithError(request);
+        return Client.ExecuteWithErrorHandling(request);
     }
-    
+
     [Action("Create association definition", Description = "Create a user defined association definition")]
-    public AssociationType CreateAssociationDefinition(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+    public async Task<AssociationType> CreateAssociationDefinition(
         [ActionParameter] CreateAssociationDefinitionRequest input)
     {
-        var sourceType = input.FromObjectType.ToLower();
-        var targetType = input.ToObjectType.ToLower();
+        var sourceType = input.FromObjectType;
+        var targetType = input.ToObjectType;
 
-        if (!AreObjectTypesValid(sourceType, targetType, out var error))
-            throw new(error);
+        var endpoint = $"/crm/v4/associations/{sourceType}/{targetType}/labels";
+        var request = new HubspotRequest(endpoint, Method.Post, Creds).WithJsonBody(input);
 
-        var endpoint =
-            $"/crm/v4/associations/{sourceType}/{targetType}/labels";
-        var request = new HubspotRequest(endpoint, Method.Post, authenticationCredentialsProviders);
-        request.AddJsonBody(input);
-
-        var response = Client.ExecuteWithError<MultipleObjects<AssociationType>>(request);
+        var response = await Client.ExecuteWithErrorHandling<MultipleObjects<AssociationType>>(request);
         return response.Results.First();
     }
 
     [Action("List associations", Description = "List all associations of an object by object type")]
-    public ListAssociationsResponse ListAssociations(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] ListAssociationsRequest input)
+    public async Task<ListAssociationsResponse> ListAssociations([ActionParameter] ListAssociationsRequest input)
     {
-        var sourceType = input.FromObjectType.ToLower();
-        var targetType = input.ToObjectType.ToLower();
-
-        if (!AreObjectTypesValid(sourceType, targetType, out var error))
-            throw new(error);
+        var sourceType = input.FromObjectType;
+        var targetType = input.ToObjectType;
 
         var endpoint = $"/crm/v4/objects/{sourceType}/{input.FromObjectId}/associations/{targetType}";
-        var request = new HubspotRequest(endpoint, Method.Get, authenticationCredentialsProviders);
+        var request = new HubspotRequest(endpoint, Method.Get, Creds);
 
-        var response = Client.Paginate<AssociationResponse>(request);
+        var response = await Client.Paginate<AssociationResponse>(request);
         return new(response);
     }
 
     [Action("List association definitions", Description = "List all associations of an object by object type")]
-    public ListAssociationDefinitionsResponse ListAssociationDefinitions(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+    public async Task<ListAssociationDefinitionsResponse> ListAssociationDefinitions(
         [ActionParameter] ListAssociationsRequest input)
     {
-        var sourceType = input.FromObjectType.ToLower();
-        var targetType = input.ToObjectType.ToLower();
-
-        if (!AreObjectTypesValid(sourceType, targetType, out var error))
-            throw new(error);
+        var sourceType = input.FromObjectType;
+        var targetType = input.ToObjectType;
 
         var endpoint = $"/crm/v4/associations/{sourceType}/{targetType}/labels";
-        var request = new HubspotRequest(endpoint, Method.Get, authenticationCredentialsProviders);
+        var request = new HubspotRequest(endpoint, Method.Get, Creds);
 
-        var response = Client.Paginate<AssociationType>(request);
+        var response = await Client.Paginate<AssociationType>(request);
         return new(response);
     }
 
     [Action("Delete association", Description = "Deletes all associations between two records")]
-    public void DeleteAssociation(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] ManageAssociationRequest input)
+    public Task DeleteAssociation([ActionParameter] ManageAssociationRequest input)
     {
-        var sourceType = input.FromObjectType.ToLower();
-        var targetType = input.ToObjectType.ToLower();
-
-        if (!AreObjectTypesValid(sourceType, targetType, out var error))
-            throw new(error);
+        var sourceType = input.FromObjectType;
+        var targetType = input.ToObjectType;
 
         var endpoint =
             $"/crm/v4/objects/{sourceType}/{input.FromObjectId}/associations/{targetType}/{input.ToObjectId}";
-        var request = new HubspotRequest(endpoint, Method.Delete, authenticationCredentialsProviders);
+        var request = new HubspotRequest(endpoint, Method.Delete, Creds);
 
-        Client.ExecuteWithError(request);
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Delete association definition", Description = "Deletes an association definition")]
-    public void DeleteAssociationDefinition(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] DeleteAssociationDefinitionRequest input)
+    public Task DeleteAssociationDefinition([ActionParameter] DeleteAssociationDefinitionRequest input)
     {
-        var sourceType = input.FromObjectType.ToLower();
-        var targetType = input.ToObjectType.ToLower();
-
-        if (!AreObjectTypesValid(sourceType, targetType, out var error))
-            throw new(error);
+        var sourceType = input.FromObjectType;
+        var targetType = input.ToObjectType;
 
         var endpoint = $"/crm/v4/associations/{sourceType}/{targetType}/labels/{input.AssociationTypeId}";
-        var request = new HubspotRequest(endpoint, Method.Delete, authenticationCredentialsProviders);
+        var request = new HubspotRequest(endpoint, Method.Delete, Creds);
 
-        Client.ExecuteWithError(request);
-    }
-
-    #endregion
-
-    #region Utils
-
-    private bool AreObjectTypesValid(string fromObjectType, string toObjectType, out string? error)
-    {
-        var errorMessage = new List<string>();
-        error = null;
-
-        if (!Types.ObjectTypes.Contains(fromObjectType))
-            errorMessage.Add("Source object type is invalid");
-
-        if (!Types.ObjectTypes.Contains(toObjectType))
-            errorMessage.Add("Target object type is invalid");
-
-        if (errorMessage.Any())
-        {
-            errorMessage.Add($"Valid values are: {string.Join(", ", Types.ObjectTypes)}");
-            error = string.Join("; ", errorMessage);
-
-            return false;
-        }
-
-        return true;
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     #endregion

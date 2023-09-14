@@ -6,6 +6,8 @@ public class AssociationType
 {
     [Display("Type ID")]
     public string TypeId { get; set; }
+    
     public string? Label { get; set; }
+    
     public string Category { get; set; }
 }

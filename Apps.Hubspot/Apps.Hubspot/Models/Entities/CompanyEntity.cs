@@ -1,21 +1,27 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using Apps.Hubspot.Crm.Models.Companies.Response;
+using Apps.Hubspot.Crm.Models.Entities.Base;
+using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.Hubspot.Crm.Models.Entities
+namespace Apps.Hubspot.Crm.Models.Entities;
+
+public class CompanyEntity : CompanyProperties
 {
-    public class CompanyEntity
-    {
-        [Display("ID")]
-        public string? Id { get; set; }
-        public string? Name { get; set; }
-        public string? Domain { get; set; }
+    [Display("ID")]
+    public string? Id { get; set; }
 
-        [Display("Contact IDs")]
-        public IEnumerable<ContactId>? ContactIds { get; set; }
-    }
-
-    public class ContactId
+    [Display("Contact IDs")]
+    public IEnumerable<string>? ContactIds { get; set; }
+    
+    public CompanyEntity(BaseObjectWithProperties<CompanyProperties> response)
     {
-        [Display("ID")]
-        public string Id { get; set; }
+        Id = response.Id;
+        Name = response.Properties.Name;
+        Domain = response.Properties.Domain;
+        City = response.Properties.City;
+        Industry = response.Properties.Industry;
+        Phone = response.Properties.Phone;
+        State = response.Properties.State;
+        Lifecyclestage = response.Properties.Lifecyclestage;
+        ContactIds = response.Associations?["contacts"].GetDistinctIds();
     }
 }
