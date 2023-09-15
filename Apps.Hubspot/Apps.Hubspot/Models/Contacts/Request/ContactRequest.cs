@@ -7,6 +7,6 @@ namespace Apps.Hubspot.Crm.Models.Contacts.Request;
 public class ContactRequest
 {
     [Display("Contact")]
-    [DataSource(typeof(ContactHandler))]
+    [DataSource(typeof(ContactDataHandler))]
     public string ContactId { get; set; }
 }

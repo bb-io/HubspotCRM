@@ -22,7 +22,7 @@ public class HubspotRequest : BlackBirdRestRequest
     {
         var token = creds.Get(CredsNames.AccessToken).Value;
 
-        this.AddHeader("Authorization", token);
+        this.AddHeader("Authorization", $"Bearer {token}");
         this.AddHeader("accept", "*/*");
     }
 }

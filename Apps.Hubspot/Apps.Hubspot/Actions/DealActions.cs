@@ -1,72 +1,84 @@
 ﻿using Apps.Hubspot.Crm.Api;
-using Apps.Hubspot.Crm.DataSourceHandlers;
+using Apps.Hubspot.Crm.Invocables;
+using Apps.Hubspot.Crm.Models;
+using Apps.Hubspot.Crm.Models.Deals.Request;
 using Blackbird.Applications.Sdk.Common;
-using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
 using Apps.Hubspot.Crm.Models.Deals.Response;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.Models.Entities.Base;
-using Blackbird.Applications.Sdk.Common.Dynamic;
+using Apps.Hubspot.Crm.Models.Properties.Request;
+using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.Hubspot.Crm.Actions;
 
 [ActionList]
-public class DealActions
+public class DealActions : HubspotInvocable
 {
-    [Action("Get all deals", Description = "Get a list of all deals")]
-    public IEnumerable<BaseObject> GetDeals(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
+    public DealActions(InvocationContext invocationContext) : base(invocationContext)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest("/crm/v3/objects/deals", Method.Get, authenticationCredentialsProviders);
-        return client.GetMultipleObjects(request);
+    }
+
+    [Action("Get all deals", Description = "Get a list of all deals")]
+    public async Task<ListItemsResponse> GetDeals()
+    {
+        var request = new HubspotRequest("/crm/v3/objects/deals", Method.Get, Creds);
+
+        var response = await Client.GetMultipleObjects(request);
+        return new(response);
     }
 
     [Action("Get deal", Description = "Get information of a specific deal")]
-    public DealEntity GetDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter][Display("Deal ID")][DataSource(typeof(DealHandler))] string dealId)
+    public async Task<DealEntity> GetDeal([ActionParameter] DealRequest deal)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Get, authenticationCredentialsProviders);
-            
-        var response = client.GetFullObject<DealProperties>(request);
+        var endpoint = $"/crm/v3/objects/deals/{deal.DealId}";
+        var request = new HubspotRequest(endpoint, Method.Get, Creds);
+
+        var response = await Client.GetFullObject<DealProperties>(request);
         return new(response);
     }
 
     [Action("Get deal property", Description = "Get a specific property of a deal")]
-    public CustomPropertyEntity GetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter][Display("Deal ID")][DataSource(typeof(DealHandler))] string dealId, [ActionParameter][Display("Property")] string property)
+    public Task<CustomPropertyEntity> GetDealProperty(
+        [ActionParameter] DealRequest deal,
+        [ActionParameter] GetPropertyRequest property)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Get, authenticationCredentialsProviders);
-        return client.GetProperty(request, property);
+        var endpoint = $"/crm/v3/objects/deals/{deal.DealId}";
+        var request = new HubspotRequest(endpoint, Method.Get, Creds);
+
+        return Client.GetProperty(request, property.Property);
     }
 
     [Action("Set deal property", Description = "Set a specific property of a deal")]
-    public DealProperties SetDealProperty(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter][Display("Deal ID")][DataSource(typeof(DealHandler))] string dealId, [ActionParameter][Display("Property")] string property, [ActionParameter][Display("Value")] string value)
+    public async Task<DealEntity> SetDealProperty(
+        [ActionParameter] DealRequest deal,
+        [ActionParameter] SetPropertyRequest property)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Patch, authenticationCredentialsProviders);
-        return client.SetProperty<DealProperties>(request, property, value);
+        var endpoint = $"/crm/v3/objects/deals/{deal.DealId}";
+        var request = new HubspotRequest(endpoint, Method.Patch, Creds);
+
+        var response = await Client
+            .SetProperty<DealProperties>(request, property.Property, property.Value);
+
+        return new(response);
     }
 
     [Action("Create deal", Description = "Create a new deal")]
-    public BaseObject? CreateDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] DealProperties deal)
+    public async Task<DealEntity> CreateDeal([ActionParameter] DealProperties deal)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/deals", Method.Post, authenticationCredentialsProviders)
+        var request = new HubspotRequest("/crm/v3/objects/deals", Method.Post, Creds)
             .AddObject(deal);
-        return client.PostObject(request);
+
+        var response = await Client.GetFullObject<DealProperties>(request);
+        return new(response);
     }
 
     [Action("Delete deal", Description = "Delete a deal")]
-    public void DeleteDeal(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter][Display("Deal ID")][DataSource(typeof(DealHandler))] string dealId)
+    public Task DeleteDeal([ActionParameter] DealRequest deal)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/deals/{dealId}", Method.Delete, authenticationCredentialsProviders);
-        client.Execute(request);
+        var endpoint = $"/crm/v3/objects/deals/{deal.DealId}";
+        var request = new HubspotRequest(endpoint, Method.Delete, Creds);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 }

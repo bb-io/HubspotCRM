@@ -7,7 +7,6 @@ using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Contacts.Request;
 using Apps.Hubspot.Crm.Models.Contacts.Response;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.Models.Entities.Base;
 using Apps.Hubspot.Crm.Models.Properties.Request;
 using Blackbird.Applications.Sdk.Common.Invocation;
 
@@ -67,12 +66,13 @@ public class ContactActions : HubspotInvocable
     }
 
     [Action("Create contact", Description = "Create a new contact")]
-    public Task<BaseObject> CreateContact([ActionParameter] ContactProperties contact)
+    public async Task<ContactEntity> CreateContact([ActionParameter] ContactProperties contact)
     {
         var request = new HubspotRequest("/crm/v3/objects/contacts", Method.Post, Creds)
             .AddObject(contact);
 
-        return Client.PostObject(request);
+        var response = await Client.GetFullObject<ContactProperties>(request);
+        return new(response);
     }
 
     [Action("Delete contact", Description = "Delete a contact")]

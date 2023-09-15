@@ -5,7 +5,6 @@ using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Companies.Request;
 using Apps.Hubspot.Crm.Models.Companies.Response;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.Models.Entities.Base;
 using Apps.Hubspot.Crm.Models.Properties.Request;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
@@ -107,7 +106,8 @@ public class CompanyActions : HubspotInvocable
     }
 
     [Action("Set company property", Description = "Set a specific property of a company")]
-    public async Task<CompanyEntity> SetCompanyProperty([ActionParameter] CompanyRequest company,
+    public async Task<CompanyEntity> SetCompanyProperty(
+        [ActionParameter] CompanyRequest company,
         [ActionParameter] SetPropertyRequest property)
     {
         var endpoint = $"/crm/v3/objects/companies/{company.CompanyId}";
@@ -120,12 +120,13 @@ public class CompanyActions : HubspotInvocable
     }
 
     [Action("Create company", Description = "Create a new company")]
-    public Task<BaseObject> CreateCompany([ActionParameter] CompanyProperties company)
+    public async Task<CompanyEntity> CreateCompany([ActionParameter] CompanyProperties company)
     {
         var request = new HubspotRequest("/crm/v3/objects/companies", Method.Post, Creds)
             .AddObject(company);
 
-        return Client.PostObject(request);
+        var response = await Client.GetFullObject<CompanyProperties>(request);
+        return new(response);
     }
 
     [Action("Delete company", Description = "Delete a company")]

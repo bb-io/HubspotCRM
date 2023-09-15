@@ -1,97 +1,91 @@
 ﻿using Apps.Hubspot.Crm.Api;
-using Apps.Hubspot.Crm.DataSourceHandlers;
+using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models.Entities;
 using Apps.Hubspot.Crm.Models.Entities.Base;
+using Apps.Hubspot.Crm.Models.Properties.Request;
 using Apps.Hubspot.Crm.Models.Tickets.Request;
 using Apps.Hubspot.Crm.Models.Tickets.Response;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
-using Blackbird.Applications.Sdk.Common.Authentication;
-using Blackbird.Applications.Sdk.Common.Dynamic;
+using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
 
 namespace Apps.Hubspot.Crm.Actions;
 
 [ActionList]
-public class TicketActions
+public class TicketActions : HubspotInvocable
 {
-    [Action("List tickets", Description = "List all tickets")]
-    public ListTicketsResponse ListTickets(
-        IEnumerable<AuthenticationCredentialsProvider> creds)
+    public TicketActions(InvocationContext invocationContext) : base(invocationContext)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/tickets", Method.Get, creds)
+    }
+
+    [Action("List tickets", Description = "List all tickets")]
+    public async Task<ListTicketsResponse> ListTickets()
+    {
+        var request = new HubspotRequest("/crm/v3/objects/tickets", Method.Get, Creds)
             .AddQueryParameter("associations", "companies");
-            
-        var response = client.Paginate<BaseObjectWithProperties<TicketProperties>>(request);
-        var tickets = response.Select(x => new TicketEntity(x)).ToList();
+
+        var response = await Client.Paginate<BaseObjectWithProperties<TicketProperties>>(request);
+        var tickets = response
+            .Select(x => new TicketEntity(x))
+            .ToList();
 
         return new(tickets);
     }
 
     [Action("Get ticket", Description = "Get information of a specific ticket")]
-    public TicketEntity? GetTicket(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Ticket ID")][DataSource(typeof(TicketHandler))]
-        string ticketId)
+    public async Task<TicketEntity> GetTicket([ActionParameter] TicketRequest ticket)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/tickets/{ticketId}", Method.Get,
-            authenticationCredentialsProviders);
-        request.AddQueryParameter("associations", "companies");
-        var response = client.GetFullObject<TicketProperties>(request);
+        var endpoint = $"/crm/v3/objects/tickets/{ticket.TicketId}";
+        var request = new HubspotRequest(endpoint, Method.Get, Creds)
+            .AddQueryParameter("associations", "companies");
 
-        return new TicketEntity(response);
+        var response = await Client.GetFullObject<TicketProperties>(request);
+
+        return new(response);
     }
 
     [Action("Get ticket property", Description = "Get a specific property of a ticket")]
-    public CustomPropertyEntity GetTicketProperty(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Ticket ID")][DataSource(typeof(TicketHandler))]
-        string ticketId, [ActionParameter] [Display("Property")] string property)
+    public Task<CustomPropertyEntity> GetTicketProperty(
+        [ActionParameter] TicketRequest ticket,
+        [ActionParameter] GetPropertyRequest property)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/ticket/{ticketId}", Method.Get,
-            authenticationCredentialsProviders);
-        return client.GetProperty(request, property);
+        var endpoint = $"/crm/v3/objects/tickets/{ticket.TicketId}";
+        var request = new HubspotRequest(endpoint, Method.Get, Creds);
+
+        return Client.GetProperty(request, property.Property);
     }
 
     [Action("Set ticket property", Description = "Set a specific property of a ticket")]
-    public TicketProperties SetTicketProperty(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Ticket ID")][DataSource(typeof(TicketHandler))]
-        string ticketId, [ActionParameter] [Display("Property name")] string property,
-        [ActionParameter] [Display("Property value")] string value)
+    public async Task<TicketEntity> SetTicketProperty(
+        [ActionParameter] TicketRequest ticket,
+        [ActionParameter] SetPropertyRequest property)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/ticket/{ticketId}", Method.Patch,
-            authenticationCredentialsProviders);
-        return client.SetProperty<TicketProperties>(request, property, value);
+        var endpoint = $"/crm/v3/objects/tickets/{ticket.TicketId}";
+        var request = new HubspotRequest(endpoint, Method.Patch, Creds);
+
+        var response = await Client
+            .SetProperty<TicketProperties>(request, property.Property, property.Value);
+
+        return new(response);
     }
-        
-        
+
     [Action("Create ticket", Description = "Create a ticket with the given properties")]
-    public TicketEntity? CreateTicket(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] CreateTicketRequest input)
+    public async Task<TicketEntity> CreateTicket([ActionParameter] CreateTicketRequest input)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/tickets", Method.Post,
-                authenticationCredentialsProviders)
+        var request = new HubspotRequest("/crm/v3/objects/tickets", Method.Post, Creds)
             .AddObject(input);
-            
-        var response = client.GetFullObject<TicketProperties>(request);
-        return new TicketEntity(response);
+
+        var response = await Client.GetFullObject<TicketProperties>(request);
+        return new(response);
     }
-        
+
     [Action("Delete ticket", Description = "Move ticket to the recycling bin")]
-    public void DeleteTicket(
-        IEnumerable<AuthenticationCredentialsProvider> creds,
-        [ActionParameter] [Display("Ticket ID")][DataSource(typeof(TicketHandler))]
-        string ticketId)
+    public Task DeleteTicket([ActionParameter] TicketRequest ticket)
     {
-        var client = new HubspotClient();
-        var request = new HubspotRequest($"/crm/v3/objects/tickets/{ticketId}", Method.Delete, creds);
-        client.ExecuteWithErrorHandling(request);
+        var endpoint = $"/crm/v3/objects/tickets/{ticket.TicketId}";
+        var request = new HubspotRequest(endpoint, Method.Delete, Creds);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 }

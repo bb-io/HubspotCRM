@@ -6,17 +6,6 @@ namespace Apps.Hubspot.Crm.Models.Entities;
 
 public class DealEntity
 {
-    public DealEntity(BaseObjectWithProperties<DealProperties> obj)
-    {
-        Id = obj.Id;
-        Amount = obj.Properties.Amount;
-        Dealname = obj.Properties.Dealname;
-        Dealstage = obj.Properties.Dealstage;
-        Pipeline = obj.Properties.Pipeline;
-        Hubspot_owner_id = obj.Properties.Hubspot_owner_id;
-        Closedate = obj.Properties.Closedate;
-    }
-
     [Display("ID")]
     public string? Id { get; set; }
 
@@ -31,8 +20,19 @@ public class DealEntity
     public string? Pipeline { get; set; }
 
     [Display("Hubspot owner ID")]
-    public string? Hubspot_owner_id { get; set; }
+    public string? HubspotOwnerId { get; set; }
 
     [Display("Date closed")]
     public DateTime? Closedate { get; set; }
+    
+    public DealEntity(BaseObjectWithProperties<DealProperties> obj)
+    {
+        Id = obj.Id;
+        Amount = obj.Properties.Amount;
+        Dealname = obj.Properties.Dealname;
+        Dealstage = obj.Properties.Dealstage;
+        Pipeline = obj.Properties.Pipeline;
+        HubspotOwnerId = obj.Properties.HubspotOwnerId;
+        Closedate = obj.Properties.Closedate;
+    }
 }

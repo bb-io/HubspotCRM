@@ -31,16 +31,15 @@ public class HubspotClient : BlackBirdRestClient
         return response.Results;
     }
 
-    public Task<BaseObject> PostObject(RestRequest request) => ExecuteWithErrorHandling<BaseObject>(request);
-
     public async Task<CustomPropertyEntity> GetProperty(RestRequest request, string name)
     {
         request.AddQueryParameter("properties", name.ToApiPropertyName());
+        
         var res = await ExecuteWithErrorHandling<ObjectWithCustomProperties>(request);
-
-        var property = res?.Properties?[name.ToApiPropertyName()];
-
-        return new CustomPropertyEntity { Property = property };
+        return new()
+        {
+            Property = res.Properties?[name.ToApiPropertyName()]
+        };
     }
 
     public Task<BaseObjectWithProperties<T>> SetProperty<T>(RestRequest request, string name, string value)
@@ -62,7 +61,7 @@ public class HubspotClient : BlackBirdRestClient
                 request.Resource = baseUrl.SetQueryParameter("after", after);
 
             var response = await ExecuteWithErrorHandling<MultipleObjects<T>>(request);
-            after = response!.Paging?.Next?.After;
+            after = response.Paging?.Next?.After;
 
             results.AddRange(response.Results);
         } while (!string.IsNullOrEmpty(after));
@@ -75,7 +74,7 @@ public class HubspotClient : BlackBirdRestClient
         if (response.ContentType is MediaTypeNames.Text.Html)
             return new(response.StatusDescription);
 
-        var error = JsonConvert.DeserializeObject<Error>(response.Content);
+        var error = JsonConvert.DeserializeObject<Error>(response.Content!);
         return new(error?.ToString());
     }
 }

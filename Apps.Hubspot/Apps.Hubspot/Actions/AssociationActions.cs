@@ -19,8 +19,6 @@ public class AssociationActions : HubspotInvocable
     {
     }
 
-    #region Actions
-
     [Action("Create association label", Description = "Set association labels between two records")]
     public Task CreateAssociationLabel([ActionParameter] CreateAssociationLabelRequest input)
     {
@@ -119,6 +117,4 @@ public class AssociationActions : HubspotInvocable
 
         return Client.ExecuteWithErrorHandling(request);
     }
-
-    #endregion
 }

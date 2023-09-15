@@ -1,4 +1,5 @@
 ﻿using Blackbird.Applications.Sdk.Common;
+using Newtonsoft.Json;
 
 namespace Apps.Hubspot.Crm.Models.Tickets.Response;
 
@@ -7,6 +8,8 @@ public class TicketProperties
     public string Content { get; set; }
 
     [Display("Hubspot priority")]
-    public string hs_ticket_priority { get; set; }
+    [JsonProperty("hs_ticket_priority")]
+    public string HsTicketPriority { get; set; }
+
     public string Subject { get; set; }
 }

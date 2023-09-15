@@ -1,4 +1,6 @@
-﻿namespace Apps.Hubspot.Crm.Models.Deals.Response;
+﻿using Newtonsoft.Json;
+
+namespace Apps.Hubspot.Crm.Models.Deals.Response;
 
 public class DealProperties
 {
@@ -6,6 +8,8 @@ public class DealProperties
     public string? Dealname { get; set; }
     public string? Dealstage { get; set; }
     public string? Pipeline { get; set; }
-    public string? Hubspot_owner_id { get; set; }
+    
+    [JsonProperty("hubspot_owner_id")]
+    public string? HubspotOwnerId { get; set; }
     public DateTime? Closedate { get; set; }
 }

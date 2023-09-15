@@ -6,5 +6,5 @@ public static class Urls
 
     public const string Api = "https://api.hubapi.com";
     public const string Authorize = OAuth + "/authorize";
-    public const string Token = OAuth + "/v1/token";
+    public const string Token = "https://api.hubapi.com/oauth/v1/token";
 }
