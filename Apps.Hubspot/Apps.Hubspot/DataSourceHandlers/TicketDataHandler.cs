@@ -1,4 +1,5 @@
 ﻿using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Constants;
 using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models.Entities.Base;
 using Apps.Hubspot.Crm.Models.Filters;
@@ -24,7 +25,7 @@ public class TicketDataHandler : HubspotInvocable, IAsyncDataSourceHandler
         var payload = new FilterRequest($"*{context.SearchString}*", "subject", "CONTAINS_TOKEN",
             new[] { "subject" });
 
-        var request = new HubspotRequest(endpoint, Method.Post, Creds).WithJsonBody(payload);
+        var request = new HubspotRequest(endpoint, Method.Post, Creds).WithJsonBody(payload, JsonConfig.Settings);
 
         var tickets =
             await Client.ExecuteWithErrorHandling<MultipleObjects<BaseObjectWithProperties<TicketProperties>>>(request);

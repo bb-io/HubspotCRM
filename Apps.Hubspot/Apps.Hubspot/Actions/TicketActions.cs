@@ -19,7 +19,7 @@ public class TicketActions : HubspotInvocable
     {
     }
 
-    [Action("List tickets", Description = "List all tickets")]
+    [Action("Get all tickets", Description = "Get a list of all tickets")]
     public async Task<ListTicketsResponse> ListTickets()
     {
         var request = new HubspotRequest("/crm/v3/objects/tickets", Method.Get, Creds)

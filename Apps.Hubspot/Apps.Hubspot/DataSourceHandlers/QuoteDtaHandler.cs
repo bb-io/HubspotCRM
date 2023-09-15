@@ -1,4 +1,5 @@
 ﻿using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Constants;
 using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models.Entities.Base;
 using Apps.Hubspot.Crm.Models.Filters;
@@ -24,7 +25,7 @@ public class QuoteDtaHandler : HubspotInvocable, IAsyncDataSourceHandler
         var payload = new FilterRequest($"*{context.SearchString}*", "hs_title", "CONTAINS_TOKEN",
             new[] { "hs_title" });
 
-        var request = new HubspotRequest(endpoint, Method.Post, Creds).WithJsonBody(payload);
+        var request = new HubspotRequest(endpoint, Method.Post, Creds).WithJsonBody(payload, JsonConfig.Settings);
 
         var quotes =
             await Client.ExecuteWithErrorHandling<MultipleObjects<BaseObjectWithProperties<QuoteProperties>>>(request);

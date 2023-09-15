@@ -2,13 +2,13 @@
 
 public class FilterRequest
 {
-    public FilterGroup[] FilterGroup { get; set; }
-    public string[] Properties { get; set; }
+    public FilterGroup[] FilterGroups { get; set; }
+    public string[]? Properties { get; set; }
 
-    public FilterRequest(string value, string property, string @operator, string[] properties)
+    public FilterRequest(string value, string property, string @operator, string[]? properties)
     {
         Properties = properties;
-        FilterGroup = new[]
+        FilterGroups = new[]
         {
             new FilterGroup()
             {

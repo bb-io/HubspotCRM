@@ -1,4 +1,5 @@
 ﻿using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Constants;
 using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models.Deals.Response;
 using Apps.Hubspot.Crm.Models.Entities.Base;
@@ -24,7 +25,7 @@ public class DealDataHandler : HubspotInvocable, IAsyncDataSourceHandler
         var payload = new FilterRequest($"*{context.SearchString}*", "dealname", "CONTAINS_TOKEN",
             new[] { "dealname" });
 
-        var request = new HubspotRequest(endpoint, Method.Post, Creds).WithJsonBody(payload);
+        var request = new HubspotRequest(endpoint, Method.Post, Creds).WithJsonBody(payload, JsonConfig.Settings);
 
         var deals =
             await Client.ExecuteWithErrorHandling<MultipleObjects<BaseObjectWithProperties<DealProperties>>>(request);

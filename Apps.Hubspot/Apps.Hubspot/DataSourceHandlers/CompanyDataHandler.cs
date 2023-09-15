@@ -1,4 +1,5 @@
 ﻿using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Constants;
 using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models.Companies.Response;
 using Apps.Hubspot.Crm.Models.Entities.Base;
@@ -24,7 +25,7 @@ public class CompanyDataHandler : HubspotInvocable, IAsyncDataSourceHandler
         var payload = new FilterRequest($"*{context.SearchString}*", "name",
             "CONTAINS_TOKEN", new[] { "name" });
 
-        var request = new HubspotRequest(endpoint, Method.Post, Creds).WithJsonBody(payload);
+        var request = new HubspotRequest(endpoint, Method.Post, Creds).WithJsonBody(payload, JsonConfig.Settings);
 
         var companies = await Client.ExecuteWithErrorHandling<MultipleObjects<BaseObjectWithProperties<CompanyProperties>>>(request);
        

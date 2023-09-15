@@ -1,14 +1,17 @@
 ﻿using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Constants;
 using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Companies.Request;
 using Apps.Hubspot.Crm.Models.Companies.Response;
 using Apps.Hubspot.Crm.Models.Entities;
+using Apps.Hubspot.Crm.Models.Filters;
 using Apps.Hubspot.Crm.Models.Properties.Request;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
 
 namespace Apps.Hubspot.Crm.Actions;
@@ -49,25 +52,10 @@ public class CompanyActions : HubspotInvocable
     [Action("Get company by custom property", Description = "Get company by custom property value")]
     public async Task<CompanyEntity> GetCompanyByCustomValue([ActionParameter] GetCompanyByCustomValueRequest input)
     {
-        var request = new HubspotRequest("/crm/v3/objects/companies/search", Method.Post, Creds);
-        request.AddJsonBody(new
-        {
-            filterGroups = new[]
-            {
-                new
-                {
-                    filters = new[]
-                    {
-                        new
-                        {
-                            value = input.CustomPropertyValue,
-                            propertyName = input.CustomPropertyName.ToApiPropertyName(),
-                            @operator = "EQ"
-                        }
-                    }
-                }
-            }
-        });
+        var payload = new FilterRequest(input.CustomPropertyValue, input.CustomPropertyName.ToApiPropertyName(), "EQ",
+            null);
+        var request = new HubspotRequest("/crm/v3/objects/companies/search", Method.Post, Creds)
+            .WithJsonBody(payload, JsonConfig.Settings);
 
         var companies = await Client.GetMultipleObjects(request);
 
