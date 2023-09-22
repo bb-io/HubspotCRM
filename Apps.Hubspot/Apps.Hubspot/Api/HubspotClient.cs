@@ -5,6 +5,7 @@ using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Entities;
 using Apps.Hubspot.Crm.Models.Entities.Base;
 using Apps.Hubspot.Crm.Models.Pagination;
+using Apps.Hubspot.Crm.Models.Properties.Request;
 using Blackbird.Applications.Sdk.Utils.Extensions.String;
 using Blackbird.Applications.Sdk.Utils.RestSharp;
 using Newtonsoft.Json;
@@ -44,7 +45,12 @@ public class HubspotClient : BlackBirdRestClient
 
     public Task<BaseObjectWithProperties<T>> SetProperty<T>(RestRequest request, string name, string value)
     {
-        request.AddObject(new Dictionary<string, string>() { { name.ToApiPropertyName(), value } });
+        var payload = new PropertiesRequest()
+        {
+            Properties = new() { { name.ToApiPropertyName(), value } }
+        };
+        request.AddJsonBody(payload);
+        
         return ExecuteWithErrorHandling<BaseObjectWithProperties<T>>(request);
     }
 
