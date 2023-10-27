@@ -4,9 +4,9 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <Product>Blackbird Hubspot CRM</Product>
+	  <Product>Hubspot CRM</Product>
 	  <Description>Hubspot CRM features including companies, contacts, deals, etc.</Description>
-	  <Version>1.0.1</Version>
+	  <Version>1.0.2</Version>
 	  <AssemblyName>Apps.Hubspot.Crm</AssemblyName>
   </PropertyGroup>
 
