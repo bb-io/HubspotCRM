@@ -16,7 +16,7 @@ public class OAuth2AuthorizeService : IOAuth2AuthorizeService
             { "redirect_uri", $"{ApplicationConstants.BridgeUri.TrimEnd('/')}/AuthorizationCode" },
             { "scope", ApplicationConstants.Scope },
             { "state", values["state"] },
-            { "authorization_url", Urls.OAuth},
+            { "authorization_url", Urls.Authorize},
             { "actual_redirect_uri", ApplicationConstants.RedirectUri },
         };
 
