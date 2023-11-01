@@ -8,7 +8,7 @@ namespace Apps.Hubspot.Crm
 {
     public class ApplicationConstants
     {
-        public const string ClientId = "#{HUBSPOTCRM_CLIENT_ID}";
+        public const string ClientId = "#{HUBSPOTCRM_CLIENT_ID}#";
 
         public const string Scope = "#{HUBSPOTCRM_SCOPE}#";
 
