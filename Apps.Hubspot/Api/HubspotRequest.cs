@@ -16,7 +16,7 @@ public class HubspotRequest : BlackBirdRestRequest
     }
 
     public RestRequest AddObject<T>(T obj)
-        => this.WithJsonBody(new ObjectWithProperties<T> { Properties = obj });
+        => this.WithJsonBody(new ObjectWithProperties<T> { Properties = obj }, JsonConfig.Settings);
 
     protected override void AddAuth(IEnumerable<AuthenticationCredentialsProvider> creds)
     {
