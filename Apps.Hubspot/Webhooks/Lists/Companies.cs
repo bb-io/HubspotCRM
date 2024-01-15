@@ -32,4 +32,5 @@ public class Companies : BaseWebhookList
     public Task<WebhookResponse<PropertyChangedPayload>> OnCompanyPropertyChanged(
         WebhookRequest webhookRequest, [WebhookParameter] PropertyChangedInput input)
         => HandlePropertyChangedWebhookResponse(webhookRequest, input);
+
 }
