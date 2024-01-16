@@ -1,8 +1,10 @@
-﻿namespace Apps.Hubspot.Crm.Webhooks.Handlers.Company;
+﻿using Blackbird.Applications.Sdk.Common.Invocation;
+
+namespace Apps.Hubspot.Crm.Webhooks.Handlers.Company;
 
 public class CompanyDeletionHandler : BaseWebhookHandler
 {
     const string SubscriptionEvent = "company.deletion";
 
-    public CompanyDeletionHandler() : base(SubscriptionEvent) { }
+    public CompanyDeletionHandler(InvocationContext context) : base(context, SubscriptionEvent) { }
 }
