@@ -31,7 +31,6 @@ public class BaseWebhookHandler : BridgeWebhookHandler
             ServiceUrl = ApplicationConstants.BridgeServiceUrl,
             Token = ApplicationConstants.BlackbirdToken
         };
-
         return (webhookData, bridgeCreds);
     }
 
