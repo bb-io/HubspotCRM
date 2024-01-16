@@ -14,8 +14,6 @@ namespace Apps.Hubspot.Crm
 
         public const string ClientSecret = "#{HUBSPOTCRM_SECRET}#";
 
-        public const string BridgeServiceUrl = "#{HUBSPOTCRM_BRIDGE_SERVICE_TEMP}#"; // TO DO: remove
-
         public const string BlackbirdToken = "#{HUBSPOTCRM_BLACKBIRD_TOKEN}#"; // bridge validates this token
     }
 }
