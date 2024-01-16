@@ -43,7 +43,7 @@ public class BaseWebhookHandler : BaseInvocable, IWebhookEventHandler
 
         var bridgeCreds = new BridgeCredentials
         {
-            ServiceUrl = InvocationContext.UriInfo.BridgeServiceUrl.ToString().TrimEnd('/') + "/hubspot",
+            ServiceUrl = InvocationContext.UriInfo.BridgeServiceUrl.ToString().TrimEnd('/') + "/webhooks/hubspot",
             Token = ApplicationConstants.BlackbirdToken
         };
         return (webhookData, bridgeCreds);
