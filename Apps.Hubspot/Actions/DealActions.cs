@@ -93,7 +93,7 @@ public class DealActions : HubspotInvocable
         if (property == null || string.IsNullOrEmpty(property.CustomPropertyValue) || string.IsNullOrEmpty(property.CustomPropertyValue))
             throw new ArgumentNullException(nameof(property));
 
-        var payload = new FilterRequest(property.CustomPropertyValue, property.CustomPropertyName.ToApiPropertyName(), "EQ", null);
+        var payload = new FilterRequest(property.CustomPropertyValue, property.CustomPropertyName.ToApiPropertyName(), "EQ", new[] { property.CustomPropertyValue });
         var request = new HubspotRequest("/crm/v3/objects/deals/search", Method.Post, Creds)
             .WithJsonBody(payload, JsonConfig.Settings);
 
