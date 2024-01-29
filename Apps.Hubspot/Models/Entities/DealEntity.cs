@@ -24,6 +24,17 @@ public class DealEntity
 
     [Display("Date closed")]
     public DateTime? Closedate { get; set; }
+
+    public DealEntity()
+    {
+        Id = string.Empty;
+        Amount = string.Empty;
+        Dealname = string.Empty;
+        Dealstage = string.Empty;
+        Pipeline = string.Empty;
+        HubspotOwnerId = string.Empty;
+        Closedate = null;
+    }
     
     public DealEntity(BaseObjectWithProperties<DealProperties> obj)
     {

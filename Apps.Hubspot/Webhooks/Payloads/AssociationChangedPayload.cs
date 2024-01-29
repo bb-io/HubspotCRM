@@ -15,4 +15,7 @@ public class AssociationChangedPayload : GenericPayload
     
     [Display("Association removed")]
     public bool AssociationRemoved { get; set; }
+
+    [Display("Is primary association")]
+    public bool IsPrimaryAssociation { get; set; }
 }

@@ -23,8 +23,8 @@ public class Contacts : BaseWebhookList
 
     [Webhook("On contact association changed", typeof(ContactAssociationChangedHandler), Description = "On contact association changed")]
     public Task<WebhookResponse<AssociationChangedPayload>> OnContactAssociationChanged(
-        WebhookRequest webhookRequest, [WebhookParameter] AssociationChangedInput input)
-        => HandleAssociationChangedWebhookResponse(webhookRequest, input);
+        WebhookRequest webhookRequest, [WebhookParameter] ContactAssociationChangedInput input)
+        => HandleAssociationChangedWebhookResponse(webhookRequest, new() { AssociationType = input.AssociationType, IsPrimaryAssosiation = input.IsPrimaryAssosiation });
 
     [Webhook("On contact restored", typeof(ContactRestoredHandler), Description = "On contact restored")]
     public Task<WebhookResponse<GenericPayload>> OnContactRestored(WebhookRequest webhookRequest)

@@ -9,6 +9,11 @@ using Apps.Hubspot.Crm.Models.Deals.Response;
 using Apps.Hubspot.Crm.Models.Entities;
 using Apps.Hubspot.Crm.Models.Properties.Request;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Apps.Hubspot.Crm.Constants;
+using Apps.Hubspot.Crm.Models.Companies.Response;
+using Apps.Hubspot.Crm.Models.Filters;
+using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using Apps.Hubspot.Crm.Extensions;
 
 namespace Apps.Hubspot.Crm.Actions;
 
@@ -80,5 +85,25 @@ public class DealActions : HubspotInvocable
         var request = new HubspotRequest(endpoint, Method.Delete, Creds);
 
         return Client.ExecuteWithErrorHandling(request);
+    }
+
+    [Action("Get deal by custom property", Description = "Get a deal by a custom property")]
+    public async Task<DealEntity> GetDealByCustomProperty([ActionParameter] GetDealByCustomValueRequest property)
+    {
+        var payload = new FilterRequest(property.CustomPropertyValue, property.CustomPropertyName.ToApiPropertyName(), "EQ", new[] { property.CustomPropertyValue });
+        var request = new HubspotRequest("/crm/v3/objects/deals/search", Method.Post, Creds)
+            .WithJsonBody(payload, JsonConfig.Settings);
+
+        var deals = await Client.GetMultipleObjects(request);
+
+        if (deals == null || !deals.Any())
+        {
+            return new();
+        }
+
+        return await GetDeal(new()
+        {
+            DealId = deals.First().Id
+        });
     }
 }
