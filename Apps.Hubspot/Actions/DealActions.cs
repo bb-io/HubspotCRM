@@ -97,7 +97,9 @@ public class DealActions : HubspotInvocable
         var deals = await Client.GetMultipleObjects(request);
 
         if (deals == null || !deals.Any())
-            throw new InvalidOperationException("No deals found with the given custom property.");
+        {
+            return new();
+        }
 
         return await GetDeal(new()
         {
