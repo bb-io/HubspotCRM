@@ -90,9 +90,6 @@ public class DealActions : HubspotInvocable
     [Action("Get deal by custom property", Description = "Get a deal by a custom property")]
     public async Task<DealEntity> GetDealByCustomProperty([ActionParameter] GetDealByCustomValueRequest property)
     {
-        if (property == null || string.IsNullOrEmpty(property.CustomPropertyValue) || string.IsNullOrEmpty(property.CustomPropertyValue))
-            throw new ArgumentNullException(nameof(property));
-
         var payload = new FilterRequest(property.CustomPropertyValue, property.CustomPropertyName.ToApiPropertyName(), "EQ", new[] { property.CustomPropertyValue });
         var request = new HubspotRequest("/crm/v3/objects/deals/search", Method.Post, Creds)
             .WithJsonBody(payload, JsonConfig.Settings);

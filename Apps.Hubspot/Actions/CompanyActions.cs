@@ -52,7 +52,7 @@ public class CompanyActions : HubspotInvocable
     [Action("Get company by custom property", Description = "Get company by custom property value")]
     public async Task<CompanyEntity> GetCompanyByCustomValue([ActionParameter] GetCompanyByCustomValueRequest input)
     {
-        var payload = new FilterRequest(input.CustomPropertyValue, input.CustomPropertyName.ToApiPropertyName(), "EQ", null);
+        var payload = new FilterRequest(input.CustomPropertyValue, input.CustomPropertyName.ToApiPropertyName(), "EQ", new[] { input.CustomPropertyValue });
         var request = new HubspotRequest("/crm/v3/objects/companies/search", Method.Post, Creds)
             .WithJsonBody(payload, JsonConfig.Settings);
 
