@@ -47,14 +47,19 @@ public class BaseWebhookList
     {
         var data = JsonConvert.DeserializeObject<AssociationChangedPayload>(webhookRequest.Body.ToString())
                    ?? throw new InvalidCastException(nameof(webhookRequest.Body));
+        
+        bool isAcceptPrimaryAssosiation = input.IsPrimaryAssosiation ?? false;
 
-        if (input.AssociationType is not null &&
-            !input.AssociationType.Equals(data.AssociationType, StringComparison.OrdinalIgnoreCase))
+        if ((isAcceptPrimaryAssosiation == false && data.IsPrimaryAssociation) ||
+            (input.AssociationType is not null &&
+            !input.AssociationType.Equals(data.AssociationType, StringComparison.OrdinalIgnoreCase)))
+        {
             return Task.FromResult(new WebhookResponse<AssociationChangedPayload>
             {
                 HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK),
                 ReceivedWebhookRequestType = WebhookRequestType.Preflight
             });
+        }
 
         return Task.FromResult(new WebhookResponse<AssociationChangedPayload>
         {
