@@ -2,5 +2,5 @@
 
 public class CustomPropertyEntity
 {
-    public string? Property { get; set; }
+    public string? Value { get; set; }
 }

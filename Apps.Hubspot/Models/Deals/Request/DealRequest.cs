@@ -6,7 +6,7 @@ namespace Apps.Hubspot.Crm.Models.Deals.Request;
 
 public class DealRequest
 {
-    [Display("Deal")]
+    [Display("Deal ID")]
     [DataSource(typeof(DealDataHandler))]
     public string DealId { get; set; }
 }

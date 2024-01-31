@@ -6,14 +6,14 @@ namespace Apps.Hubspot.Crm.Models.Entities;
 
 public class QuoteEntity
 {
-    [Display("ID")]
+    [Display("Quote ID")]
     public string? Id { get; set; }
     
-    [Display("Hubspot title")]
+    [Display("Title")]
     public string? HsTitle { get; set; }
 
-    [Display("Hubspot expiration date")]
-    public DateTime HsExpirationDate { get; set; }
+    [Display("Expiration date")]
+    public DateTime? HsExpirationDate { get; set; }
     
     public QuoteEntity(BaseObjectWithProperties<QuoteProperties> obj)
     {

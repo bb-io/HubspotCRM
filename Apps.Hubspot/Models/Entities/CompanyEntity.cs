@@ -6,12 +6,25 @@ namespace Apps.Hubspot.Crm.Models.Entities;
 
 public class CompanyEntity : CompanyProperties
 {
-    [Display("ID")]
+    [Display("Company ID")]
     public string? Id { get; set; }
 
     [Display("Contact IDs")]
     public IEnumerable<string>? ContactIds { get; set; }
-    
+
+    public CompanyEntity()
+    {
+        Id = null;
+        Name = null;
+        Domain = null;
+        City = null;
+        Industry = null;
+        Phone = null;
+        State = null;
+        Lifecyclestage = null;
+        ContactIds = null;
+    }
+
     public CompanyEntity(BaseObjectWithProperties<CompanyProperties> response)
     {
         Id = response.Id;

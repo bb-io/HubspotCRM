@@ -9,6 +9,8 @@ using Apps.Hubspot.Crm.Models.Contacts.Response;
 using Apps.Hubspot.Crm.Models.Entities;
 using Apps.Hubspot.Crm.Models.Properties.Request;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.Hubspot.Crm.Actions;
 
@@ -19,14 +21,14 @@ public class ContactActions : HubspotInvocable
     {
     }
 
-    [Action("Get all contacts", Description = "Get a list of all contacts")]
-    public async Task<ListItemsResponse> GetContacts()
-    {
-        var request = new HubspotRequest("/crm/v3/objects/contacts", Method.Get, Creds);
+    //[Action("Get all contacts", Description = "Get a list of all contacts")]
+    //public async Task<ListItemsResponse> GetContacts()
+    //{
+    //    var request = new HubspotRequest("/crm/v3/objects/contacts", Method.Get, Creds);
 
-        var response = await Client.GetMultipleObjects(request);
-        return new(response);
-    }
+    //    var response = await Client.GetMultipleObjects(request);
+    //    return new(response);
+    //}
 
     [Action("Get contact", Description = "Get information of a specific contact")]
     public async Task<ContactEntity> GetContact([ActionParameter] ContactRequest contact)
@@ -43,24 +45,25 @@ public class ContactActions : HubspotInvocable
     [Action("Get contact property", Description = "Get a specific property of a contact")]
     public Task<CustomPropertyEntity> GetContactProperty(
         [ActionParameter] ContactRequest contact,
-        [ActionParameter] GetPropertyRequest property)
+        [ActionParameter][DataSource(typeof(ContactPropertiesDataHandler))][Display("Property")] string property)
     {
         var endpoint = $"/crm/v3/objects/contacts/{contact.ContactId}";
         var request = new HubspotRequest(endpoint, Method.Get, Creds);
 
-        return Client.GetProperty(request, property.Property);
+        return Client.GetProperty(request, property);
     }
 
     [Action("Set contact property", Description = "Set a specific property of a contact")]
     public async Task<ContactEntity> SetContactProperty(
         [ActionParameter] ContactRequest contact,
-        [ActionParameter] SetPropertyRequest property)
+        [ActionParameter][DataSource(typeof(ContactPropertiesDataHandler))][Display("Property")] string property,
+        [ActionParameter][Display("Value")] string value)
     {
         var endpoint = $"/crm/v3/objects/contacts/{contact.ContactId}";
         var request = new HubspotRequest(endpoint, Method.Patch, Creds);
 
         var response = await Client
-            .SetProperty<ContactProperties>(request, property.Property, property.Value);
+            .SetProperty<ContactProperties>(request, property, value);
 
         return new(response);
     }
