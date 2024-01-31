@@ -13,7 +13,7 @@ public class QuoteEntity
     public string? HsTitle { get; set; }
 
     [Display("Expiration date")]
-    public DateTime HsExpirationDate { get; set; }
+    public DateTime? HsExpirationDate { get; set; }
     
     public QuoteEntity(BaseObjectWithProperties<QuoteProperties> obj)
     {
