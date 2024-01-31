@@ -18,4 +18,14 @@ public class CompanyProperties
         
     [Display("Lifecycle stage")]
     public string? Lifecyclestage { get; set; }
+
+    [Display("Street address 1")]
+    public string? StreetAddress1 { get; set; }
+
+    [Display("Street address 2")]
+    public string? StreetAddress2 { get; set; }
+
+    [Display("Postal code")]
+    public string? PostalCode { get; set; }
+    public string? Country { get; set; }
 }

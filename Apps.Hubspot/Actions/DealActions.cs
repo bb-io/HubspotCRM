@@ -58,7 +58,7 @@ public class DealActions : HubspotInvocable
 
         if (deals == null || !deals.Any())
         {
-            return new();
+            return new DealEntity { };
         }
 
         return await GetDeal(new()

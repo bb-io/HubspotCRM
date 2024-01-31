@@ -27,12 +27,12 @@ public class DealEntity
 
     public DealEntity()
     {
-        Id = string.Empty;
-        Amount = string.Empty;
-        Dealname = string.Empty;
-        Dealstage = string.Empty;
+        Id = null;
+        Amount = null;
+        Dealname = null;
+        Dealstage = null;
         Pipeline = string.Empty;
-        HubspotOwnerId = string.Empty;
+        HubspotOwnerId = null;
         Closedate = null;
     }
     

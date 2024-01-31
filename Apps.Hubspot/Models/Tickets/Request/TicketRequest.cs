@@ -6,7 +6,7 @@ namespace Apps.Hubspot.Crm.Models.Tickets.Request;
 
 public class TicketRequest
 {
-    [Display("Ticket")]
+    [Display("Ticket ID")]
     [DataSource(typeof(TicketDataHandler))]
     public string TicketId { get; set; }
 }

@@ -9,6 +9,8 @@ using Apps.Hubspot.Crm.Models.Properties.Request;
 using Apps.Hubspot.Crm.Models.Quotes.Request;
 using Apps.Hubspot.Crm.Models.Quotes.Response;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.Hubspot.Crm.Actions;
 
@@ -19,14 +21,14 @@ public class QuoteActions : HubspotInvocable
     {
     }
 
-    [Action("Get all quotes", Description = "Get a list of all quotes")]
-    public async Task<ListItemsResponse> GetQuotes()
-    {
-        var request = new HubspotRequest("/crm/v3/objects/quotes", Method.Get, Creds);
+    //[Action("Get all quotes", Description = "Get a list of all quotes")]
+    //public async Task<ListItemsResponse> GetQuotes()
+    //{
+    //    var request = new HubspotRequest("/crm/v3/objects/quotes", Method.Get, Creds);
 
-        var response = await Client.GetMultipleObjects(request);
-        return new(response);
-    }
+    //    var response = await Client.GetMultipleObjects(request);
+    //    return new(response);
+    //}
 
     [Action("Get quote", Description = "Get information of a specific quote")]
     public async Task<QuoteEntity> GetQuote([ActionParameter] QuoteRequest quote)
@@ -41,24 +43,25 @@ public class QuoteActions : HubspotInvocable
     [Action("Get quote property", Description = "Get a specific property of a quote")]
     public Task<CustomPropertyEntity> GetQuoteProperty(
         [ActionParameter] QuoteRequest quote,
-        [ActionParameter] GetPropertyRequest property)
+        [ActionParameter][DataSource(typeof(QuotePropertiesDataHandler))][Display("Property")] string property)
     {
         var endpoint = $"/crm/v3/objects/quotes/{quote.QuoteId}";
         var request = new HubspotRequest(endpoint, Method.Get, Creds);
 
-        return Client.GetProperty(request, property.Property);
+        return Client.GetProperty(request, property);
     }
 
     [Action("Set quote property", Description = "Set a specific property of a quote")]
     public async Task<QuoteEntity> SetQuoteProperty(
         [ActionParameter] QuoteRequest quote,
-        [ActionParameter] SetPropertyRequest property)
+        [ActionParameter][DataSource(typeof(QuotePropertiesDataHandler))][Display("Property")] string property,
+        [ActionParameter][Display("Value")] string value)
     {
         var endpoint = $"/crm/v3/objects/quotes/{quote.QuoteId}";
         var request = new HubspotRequest(endpoint, Method.Patch, Creds);
 
         var response = await Client
-            .SetProperty<QuoteProperties>(request, property.Property, property.Value);
+            .SetProperty<QuoteProperties>(request, property, value);
 
         return new(response);
     }
