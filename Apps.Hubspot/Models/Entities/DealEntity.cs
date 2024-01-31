@@ -6,7 +6,7 @@ namespace Apps.Hubspot.Crm.Models.Entities;
 
 public class DealEntity
 {
-    [Display("ID")]
+    [Display("Deal ID")]
     public string? Id { get; set; }
 
     public string? Amount { get; set; }

@@ -83,12 +83,12 @@ public class CompanyActions : HubspotInvocable
         
         return new()
         {
-            StreetAddress1 = (await Client.GetProperty(request, "address")).Property,
-            StreetAddress2 = (await Client.GetProperty(request, "address2")).Property,
-            PostalCode = (await Client.GetProperty(request, "zip")).Property,
-            City = (await Client.GetProperty(request, "city")).Property,
-            State = (await Client.GetProperty(request, "state")).Property,
-            Country = (await Client.GetProperty(request, "country")).Property
+            StreetAddress1 = (await Client.GetProperty(request, "address")).Value,
+            StreetAddress2 = (await Client.GetProperty(request, "address2")).Value,
+            PostalCode = (await Client.GetProperty(request, "zip")).Value,
+            City = (await Client.GetProperty(request, "city")).Value,
+            State = (await Client.GetProperty(request, "state")).Value,
+            Country = (await Client.GetProperty(request, "country")).Value
         };
     }
 

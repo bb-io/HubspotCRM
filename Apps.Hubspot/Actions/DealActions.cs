@@ -14,6 +14,8 @@ using Apps.Hubspot.Crm.Models.Companies.Response;
 using Apps.Hubspot.Crm.Models.Filters;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Apps.Hubspot.Crm.Extensions;
+using Blackbird.Applications.Sdk.Common.Dynamic;
+using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
 
 namespace Apps.Hubspot.Crm.Actions;
 
@@ -24,14 +26,14 @@ public class DealActions : HubspotInvocable
     {
     }
 
-    [Action("Get all deals", Description = "Get a list of all deals")]
-    public async Task<ListItemsResponse> GetDeals()
-    {
-        var request = new HubspotRequest("/crm/v3/objects/deals", Method.Get, Creds);
+    //[Action("Get all deals", Description = "Get a list of all deals")]
+    //public async Task<ListItemsResponse> GetDeals()
+    //{
+    //    var request = new HubspotRequest("/crm/v3/objects/deals", Method.Get, Creds);
 
-        var response = await Client.GetMultipleObjects(request);
-        return new(response);
-    }
+    //    var response = await Client.GetMultipleObjects(request);
+    //    return new(response);
+    //}
 
     [Action("Get deal", Description = "Get information of a specific deal")]
     public async Task<DealEntity> GetDeal([ActionParameter] DealRequest deal)
@@ -43,27 +45,50 @@ public class DealActions : HubspotInvocable
         return new(response);
     }
 
+    [Action("Get deal by custom property", Description = "Get a deal by a custom property")]
+    public async Task<DealEntity> GetDealByCustomProperty(
+    [ActionParameter][DataSource(typeof(DealPropertiesDataHandler))][Display("Property")] string property,
+    [ActionParameter][Display("Value")] string value)
+    {
+        var payload = new FilterRequest(value, property.ToApiPropertyName(), "EQ", new[] { value });
+        var request = new HubspotRequest("/crm/v3/objects/deals/search", Method.Post, Creds)
+            .WithJsonBody(payload, JsonConfig.Settings);
+
+        var deals = await Client.GetMultipleObjects(request);
+
+        if (deals == null || !deals.Any())
+        {
+            return new();
+        }
+
+        return await GetDeal(new()
+        {
+            DealId = deals.First().Id
+        });
+    }
+
     [Action("Get deal property", Description = "Get a specific property of a deal")]
     public Task<CustomPropertyEntity> GetDealProperty(
         [ActionParameter] DealRequest deal,
-        [ActionParameter] GetPropertyRequest property)
+        [ActionParameter][DataSource(typeof(DealPropertiesDataHandler))][Display("Property")] string property)
     {
         var endpoint = $"/crm/v3/objects/deals/{deal.DealId}";
         var request = new HubspotRequest(endpoint, Method.Get, Creds);
 
-        return Client.GetProperty(request, property.Property);
+        return Client.GetProperty(request, property);
     }
 
     [Action("Set deal property", Description = "Set a specific property of a deal")]
     public async Task<DealEntity> SetDealProperty(
         [ActionParameter] DealRequest deal,
-        [ActionParameter] SetPropertyRequest property)
+        [ActionParameter][DataSource(typeof(DealPropertiesDataHandler))][Display("Property")] string property,
+        [ActionParameter][Display("Value")] string value)
     {
         var endpoint = $"/crm/v3/objects/deals/{deal.DealId}";
         var request = new HubspotRequest(endpoint, Method.Patch, Creds);
 
         var response = await Client
-            .SetProperty<DealProperties>(request, property.Property, property.Value);
+            .SetProperty<DealProperties>(request, property, value);
 
         return new(response);
     }
@@ -85,25 +110,5 @@ public class DealActions : HubspotInvocable
         var request = new HubspotRequest(endpoint, Method.Delete, Creds);
 
         return Client.ExecuteWithErrorHandling(request);
-    }
-
-    [Action("Get deal by custom property", Description = "Get a deal by a custom property")]
-    public async Task<DealEntity> GetDealByCustomProperty([ActionParameter] GetDealByCustomValueRequest property)
-    {
-        var payload = new FilterRequest(property.CustomPropertyValue, property.CustomPropertyName.ToApiPropertyName(), "EQ", new[] { property.CustomPropertyValue });
-        var request = new HubspotRequest("/crm/v3/objects/deals/search", Method.Post, Creds)
-            .WithJsonBody(payload, JsonConfig.Settings);
-
-        var deals = await Client.GetMultipleObjects(request);
-
-        if (deals == null || !deals.Any())
-        {
-            return new();
-        }
-
-        return await GetDeal(new()
-        {
-            DealId = deals.First().Id
-        });
     }
 }
