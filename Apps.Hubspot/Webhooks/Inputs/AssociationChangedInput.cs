@@ -9,4 +9,7 @@ public class AssociationChangedInput
 
     [Display("Is primary assosiation")]
     public bool? IsPrimaryAssosiation { get; set; }
+
+    [Display("Association removed")]
+    public bool? AssociationRemoved { get; set; }
 }
