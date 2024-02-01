@@ -12,5 +12,8 @@ namespace Apps.Hubspot.Crm.Webhooks.Inputs
 
         [Display("Is primary assosiation")]
         public bool? IsPrimaryAssosiation { get; set; }
+
+        [Display("Association removed")]
+        public bool? AssociationRemoved { get; set; }
     }
 }
