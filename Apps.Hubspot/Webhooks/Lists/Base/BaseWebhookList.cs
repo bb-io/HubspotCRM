@@ -41,6 +41,7 @@ public class BaseWebhookList
             Result = data
         });
     }
+
     protected Task<WebhookResponse<AssociationChangedPayload>> HandleAssociationChangedWebhookResponse(
         WebhookRequest webhookRequest,
         [WebhookParameter] AssociationChangedInput input)
@@ -48,18 +49,38 @@ public class BaseWebhookList
         var data = JsonConvert.DeserializeObject<AssociationChangedPayload>(webhookRequest.Body.ToString())
                    ?? throw new InvalidCastException(nameof(webhookRequest.Body));
 
-        if (input.AssociationType is not null &&
-            !input.AssociationType.Equals(data.AssociationType, StringComparison.OrdinalIgnoreCase))
+        if (IsPreflightResponseNeeded(input, data))
+        {
             return Task.FromResult(new WebhookResponse<AssociationChangedPayload>
             {
                 HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK),
                 ReceivedWebhookRequestType = WebhookRequestType.Preflight
             });
+        }
 
         return Task.FromResult(new WebhookResponse<AssociationChangedPayload>
         {
             HttpResponseMessage = null,
             Result = data
         });
+    }
+
+    private bool IsPreflightResponseNeeded(AssociationChangedInput input, AssociationChangedPayload data)
+    {
+        bool isAcceptPrimaryAssociation = input.IsPrimaryAssosiation ?? false;
+
+        if ((isAcceptPrimaryAssociation == false && data.IsPrimaryAssociation) ||
+            (input.AssociationType is not null &&
+            !input.AssociationType.Equals(data.AssociationType, StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+
+        if (input.AssociationRemoved is not null && data.AssociationRemoved != input.AssociationRemoved)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

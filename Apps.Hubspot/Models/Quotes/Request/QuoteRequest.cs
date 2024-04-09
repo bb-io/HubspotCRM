@@ -6,7 +6,7 @@ namespace Apps.Hubspot.Crm.Models.Quotes.Request;
 
 public class QuoteRequest
 {
-    [Display("Quote")]
+    [Display("Quote ID")]
     [DataSource(typeof(QuoteDtaHandler))]
     public string QuoteId { get; set; }
 }

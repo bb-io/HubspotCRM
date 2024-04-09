@@ -1,5 +1,6 @@
 ﻿using Apps.Hubspot.Crm.Api;
 using Apps.Hubspot.Crm.Constants;
+using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
 using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models;
@@ -8,8 +9,10 @@ using Apps.Hubspot.Crm.Models.Companies.Response;
 using Apps.Hubspot.Crm.Models.Entities;
 using Apps.Hubspot.Crm.Models.Filters;
 using Apps.Hubspot.Crm.Models.Properties.Request;
+using Apps.Hubspot.Crm.Webhooks.Lists;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
@@ -23,14 +26,14 @@ public class CompanyActions : HubspotInvocable
     {
     }
 
-    [Action("Get all companies", Description = "Get a list of all companies")]
-    public async Task<ListItemsResponse> GetCompanies()
-    {
-        var request = new HubspotRequest("/crm/v3/objects/companies", Method.Get, Creds);
+    //[Action("Get all companies", Description = "Get a list of all companies")]
+    //public async Task<ListItemsResponse> GetCompanies()
+    //{
+    //    var request = new HubspotRequest("/crm/v3/objects/companies", Method.Get, Creds);
         
-        var response = await Client.GetMultipleObjects(request);
-        return new(response);
-    }
+    //    var response = await Client.GetMultipleObjects(request);
+    //    return new(response);
+    //}
 
     [Action("Get company", Description = "Get information of a specific company")]
     public async Task<CompanyEntity> GetCompany([ActionParameter] CompanyRequest company)
@@ -46,18 +49,28 @@ public class CompanyActions : HubspotInvocable
             Name = response.Properties.Name,
             Domain = response.Properties.Domain,
             ContactIds = response.Associations?["contacts"].GetDistinctIds(),
+            StreetAddress1 = (await Client.GetProperty(request, "address")).Value,
+            StreetAddress2 = (await Client.GetProperty(request, "address2")).Value,
+            PostalCode = (await Client.GetProperty(request, "zip")).Value,
+            Country = (await Client.GetProperty(request, "country")).Value
         };
     }
 
     [Action("Get company by custom property", Description = "Get company by custom property value")]
-    public async Task<CompanyEntity> GetCompanyByCustomValue([ActionParameter] GetCompanyByCustomValueRequest input)
+    public async Task<CompanyEntity> GetCompanyByCustomValue(
+        [ActionParameter][DataSource(typeof(CompanyPropertiesDataHandler))][Display("Property")] string property,
+        [ActionParameter][Display("Value")] string value)
     {
-        var payload = new FilterRequest(input.CustomPropertyValue, input.CustomPropertyName.ToApiPropertyName(), "EQ",
-            null);
+        var payload = new FilterRequest(value, property.ToApiPropertyName(), "EQ", new[] { value });
         var request = new HubspotRequest("/crm/v3/objects/companies/search", Method.Post, Creds)
             .WithJsonBody(payload, JsonConfig.Settings);
 
         var companies = await Client.GetMultipleObjects(request);
+
+        if (companies == null || !companies.Any())
+        {
+            return new CompanyEntity { };
+        }
 
         return await GetCompany(new()
         {
@@ -68,41 +81,25 @@ public class CompanyActions : HubspotInvocable
     [Action("Get company property", Description = "Get a specific property of a company")]
     public Task<CustomPropertyEntity> GetCompanyProperty(
         [ActionParameter] CompanyRequest company,
-        [ActionParameter] GetPropertyRequest property)
+        [ActionParameter][DataSource(typeof(CompanyPropertiesDataHandler))][Display("Property")] string property)
     {
         var endpoint = $"/crm/v3/objects/companies/{company.CompanyId}";
         var request = new HubspotRequest(endpoint, Method.Get, Creds);
       
-        return Client.GetProperty(request, property.Property);
-    }
-
-    [Action("Get company address", Description = "Get company address")]
-    public async Task<GetCompanyAddressResponse> GetCompanyAddress([ActionParameter] CompanyRequest company)
-    {
-        var endpoint = $"/crm/v3/objects/companies/{company.CompanyId}";
-        var request = new HubspotRequest(endpoint, Method.Get, Creds);
-        
-        return new()
-        {
-            StreetAddress1 = (await Client.GetProperty(request, "address")).Property,
-            StreetAddress2 = (await Client.GetProperty(request, "address2")).Property,
-            PostalCode = (await Client.GetProperty(request, "zip")).Property,
-            City = (await Client.GetProperty(request, "city")).Property,
-            State = (await Client.GetProperty(request, "state")).Property,
-            Country = (await Client.GetProperty(request, "country")).Property
-        };
+        return Client.GetProperty(request, property);
     }
 
     [Action("Set company property", Description = "Set a specific property of a company")]
     public async Task<CompanyEntity> SetCompanyProperty(
         [ActionParameter] CompanyRequest company,
-        [ActionParameter] SetPropertyRequest property)
+        [ActionParameter][DataSource(typeof(CompanyPropertiesDataHandler))][Display("Property")] string property,
+        [ActionParameter][Display("Value")] string value)
     {
         var endpoint = $"/crm/v3/objects/companies/{company.CompanyId}";
         var request = new HubspotRequest(endpoint, Method.Patch, Creds);
         
         var response = await Client.
-            SetProperty<CompanyProperties>(request, property.Property, property.Value);
+            SetProperty<CompanyProperties>(request, property, value);
         
         return new(response);
     }

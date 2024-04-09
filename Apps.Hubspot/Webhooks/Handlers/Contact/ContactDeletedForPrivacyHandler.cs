@@ -1,8 +1,10 @@
-﻿namespace Apps.Hubspot.Crm.Webhooks.Handlers.Contact;
+﻿using Blackbird.Applications.Sdk.Common.Invocation;
+
+namespace Apps.Hubspot.Crm.Webhooks.Handlers.Contact;
 
 public class ContactDeletedForPrivacyHandler : BaseWebhookHandler
 {
     const string SubscriptionEvent = "contact.privacyDeletion";
 
-    public ContactDeletedForPrivacyHandler() : base(SubscriptionEvent) { }
+    public ContactDeletedForPrivacyHandler(InvocationContext context) : base(context, SubscriptionEvent) { }
 }

@@ -1,10 +1,12 @@
-﻿namespace Apps.Hubspot.Crm.Webhooks.Handlers.Products;
+﻿using Blackbird.Applications.Sdk.Common.Invocation;
+
+namespace Apps.Hubspot.Crm.Webhooks.Handlers.Products;
 
 public class ProductRestoredHandler : BaseWebhookHandler
 {
     const string SubscriptionEvent = "product.restore";
 
-    public ProductRestoredHandler() : base(SubscriptionEvent)
+    public ProductRestoredHandler(InvocationContext context) : base(context, SubscriptionEvent)
     {
     }
 }

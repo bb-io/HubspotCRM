@@ -6,7 +6,7 @@ namespace Apps.Hubspot.Crm.Models.Companies.Request;
 
 public class CompanyRequest
 {
-    [Display("Company")]
+    [Display("Company ID")]
     [DataSource(typeof(CompanyDataHandler))]
     public string CompanyId { get; set; }
 }

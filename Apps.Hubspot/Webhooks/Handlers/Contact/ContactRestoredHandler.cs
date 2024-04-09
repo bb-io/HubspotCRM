@@ -1,8 +1,10 @@
-﻿namespace Apps.Hubspot.Crm.Webhooks.Handlers.Contact;
+﻿using Blackbird.Applications.Sdk.Common.Invocation;
+
+namespace Apps.Hubspot.Crm.Webhooks.Handlers.Contact;
 
 public class ContactRestoredHandler : BaseWebhookHandler
 {
     const string SubscriptionEvent = "contact.restore";
 
-    public ContactRestoredHandler() : base(SubscriptionEvent) { }
+    public ContactRestoredHandler(InvocationContext context) : base(context, SubscriptionEvent) { }
 }

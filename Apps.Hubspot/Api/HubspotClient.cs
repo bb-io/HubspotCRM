@@ -39,7 +39,7 @@ public class HubspotClient : BlackBirdRestClient
         var res = await ExecuteWithErrorHandling<ObjectWithCustomProperties>(request);
         return new()
         {
-            Property = res.Properties?[name.ToApiPropertyName()]
+            Value = res.Properties?[name.ToApiPropertyName()]
         };
     }
 

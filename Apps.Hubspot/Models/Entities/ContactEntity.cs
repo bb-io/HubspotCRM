@@ -6,7 +6,7 @@ namespace Apps.Hubspot.Crm.Models.Entities;
 
 public class ContactEntity
 {
-    [Display("ID")] public string? Id { get; set; }
+    [Display("Contact ID")] public string? Id { get; set; }
 
     public string? Email { get; set; }
     [Display("First name")] public string? Firstname { get; set; }

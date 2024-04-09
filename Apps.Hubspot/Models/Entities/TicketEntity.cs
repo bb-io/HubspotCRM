@@ -6,7 +6,7 @@ namespace Apps.Hubspot.Crm.Models.Entities;
 
 public class TicketEntity
 {
-    [Display("ID")] public string? Id { get; set; }
+    [Display("Ticket ID")] public string? Id { get; set; }
     public string? Subject { get; set; }
     public string? Description { get; set; }
 

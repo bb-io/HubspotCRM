@@ -6,7 +6,7 @@ namespace Apps.Hubspot.Crm.Models.Entities;
 
 public class DealEntity
 {
-    [Display("ID")]
+    [Display("Deal ID")]
     public string? Id { get; set; }
 
     public string? Amount { get; set; }
@@ -24,6 +24,17 @@ public class DealEntity
 
     [Display("Date closed")]
     public DateTime? Closedate { get; set; }
+
+    public DealEntity()
+    {
+        Id = null;
+        Amount = null;
+        Dealname = null;
+        Dealstage = null;
+        Pipeline = string.Empty;
+        HubspotOwnerId = null;
+        Closedate = null;
+    }
     
     public DealEntity(BaseObjectWithProperties<DealProperties> obj)
     {
