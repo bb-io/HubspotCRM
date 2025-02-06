@@ -6,6 +6,7 @@ using Apps.Hubspot.Crm.Models.Entities;
 using Apps.Hubspot.Crm.Models.Entities.Base;
 using Apps.Hubspot.Crm.Models.Pagination;
 using Apps.Hubspot.Crm.Models.Properties.Request;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Utils.Extensions.String;
 using Blackbird.Applications.Sdk.Utils.RestSharp;
 using Newtonsoft.Json;
@@ -78,9 +79,9 @@ public class HubspotClient : BlackBirdRestClient
     protected override Exception ConfigureErrorException(RestResponse response)
     {
         if (response.ContentType is MediaTypeNames.Text.Html)
-            return new(response.StatusDescription);
+            throw new PluginApplicationException(response.StatusDescription);
 
         var error = JsonConvert.DeserializeObject<Error>(response.Content!);
-        return new(error?.ToString());
+        throw new PluginApplicationException(error?.ToString());
     }
 }
