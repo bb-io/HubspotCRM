@@ -384,3 +384,4 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 /Apps.Hubspot/Apps.Hubspot/ApplicationConstants.cs
+/Tests.Hubspot/appsettings.json

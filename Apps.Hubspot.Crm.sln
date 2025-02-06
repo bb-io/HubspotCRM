@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apps.Hubspot.Crm", "Apps.Hubspot\Apps.Hubspot.Crm.csproj", "{483D78DA-0409-4D48-BE76-6933F2AC8793}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Hubspot", "Tests.Hubspot\Tests.Hubspot.csproj", "{FCB457E0-0FBD-4B1F-9BFB-2C4B9B55F5B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{483D78DA-0409-4D48-BE76-6933F2AC8793}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{483D78DA-0409-4D48-BE76-6933F2AC8793}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{483D78DA-0409-4D48-BE76-6933F2AC8793}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCB457E0-0FBD-4B1F-9BFB-2C4B9B55F5B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCB457E0-0FBD-4B1F-9BFB-2C4B9B55F5B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCB457E0-0FBD-4B1F-9BFB-2C4B9B55F5B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCB457E0-0FBD-4B1F-9BFB-2C4B9B55F5B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
