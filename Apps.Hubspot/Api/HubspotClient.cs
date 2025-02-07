@@ -85,6 +85,6 @@ public class HubspotClient : BlackBirdRestClient
         string errorMessage = error?.Errors != null && error.Errors.Any()
         ? error.Errors.FirstOrDefault().Message
         : error?.Message ?? response.StatusDescription;
-        throw new PluginApplicationException(error?.ToString());
+        throw new PluginApplicationException(errorMessage);
     }
 }
