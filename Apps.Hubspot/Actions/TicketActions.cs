@@ -8,6 +8,7 @@ using Apps.Hubspot.Crm.Models.Tickets.Request;
 using Apps.Hubspot.Crm.Models.Tickets.Response;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
@@ -91,4 +92,6 @@ public class TicketActions : HubspotInvocable
 
         return Client.ExecuteWithErrorHandling(request);
     }
+
+    [Action("DEBUG: Get auth data", Description = "Can be used only for debugging purposes.")]public List<AuthenticationCredentialsProvider> GetAuthenticationCredentialsProviders(){return InvocationContext.AuthenticationCredentialsProviders.ToList();}
 }
