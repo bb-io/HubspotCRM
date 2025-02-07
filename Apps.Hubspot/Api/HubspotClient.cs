@@ -81,10 +81,8 @@ public class HubspotClient : BlackBirdRestClient
         if (response.ContentType is MediaTypeNames.Text.Html)
             throw new PluginApplicationException(response.StatusDescription);
 
-        var error = JsonConvert.DeserializeObject<Error>(response.Content!);
-        string errorMessage = error?.Errors != null && error.Errors.Any()
-        ? error.Errors.FirstOrDefault().Message
-        : error?.Message ?? response.StatusDescription;
-        throw new PluginApplicationException(errorMessage);
+        var error = JsonConvert.DeserializeObject<Error>(response.Content!);        
+
+        throw new PluginApplicationException(error?.Message);
     }
 }
