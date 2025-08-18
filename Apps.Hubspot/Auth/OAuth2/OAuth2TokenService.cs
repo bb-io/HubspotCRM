@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Apps.Hubspot.Crm.Constants;
+using Apps.Hubspot.Crm.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -7,12 +8,8 @@ using Newtonsoft.Json;
 
 namespace Apps.Hubspot.Crm.Auth.OAuth2;
 
-public class OAuth2TokenService : BaseInvocable, IOAuth2TokenService
+public class OAuth2TokenService(InvocationContext invocationContext) : BaseInvocable(invocationContext), IOAuth2TokenService
 {
-    public OAuth2TokenService(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
     public bool IsRefreshToken(Dictionary<string, string> values)
     {
         var expiresAt = DateTime.Parse(values[CredsNames.ExpiresAt]);
@@ -58,25 +55,33 @@ public class OAuth2TokenService : BaseInvocable, IOAuth2TokenService
         CancellationToken token)
     {
         var responseContent = await ExecuteTokenRequest(parameters, token);
+        var tokenDto = JsonConvert.DeserializeObject<HubSpotTokenDto>(responseContent!)!;
 
-        var resultDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseContent)
-                                   ?.ToDictionary(r => r.Key, r => r.Value)
-                               ?? throw new InvalidOperationException(
-                                   $"Invalid response content: {responseContent}");
+        var customExpiresIn = Math.Max(0, tokenDto.ExpiresIn - 10);
+        var expiresAt = DateTime.UtcNow.AddSeconds(customExpiresIn);
+        var expiresAtStr = expiresAt.ToString("o", CultureInfo.InvariantCulture);
 
-        var expiresIn = int.Parse(resultDictionary[CredsNames.ExpiresIn]);
-        var expiresAt = DateTime.UtcNow.AddSeconds(expiresIn);
-        resultDictionary.Add(CredsNames.ExpiresAt, expiresAt.ToString(CultureInfo.InvariantCulture));
-
-        return resultDictionary;
+        return new()
+        {
+            { CredsNames.AccessToken, tokenDto.AccessToken },
+            { CredsNames.RefreshToken, tokenDto.RefreshToken ?? string.Empty },
+            { CredsNames.ExpiresAt, expiresAtStr },
+            { "token_type", tokenDto.TokenType ?? string.Empty },
+            { "hub_id", tokenDto.HubId?.ToString() ?? string.Empty }
+        };
     }
 
-    private async Task<string> ExecuteTokenRequest(Dictionary<string, string> parameters,
-        CancellationToken cancellationToken)
+    private async Task<string> ExecuteTokenRequest(Dictionary<string, string> parameters, CancellationToken cancellationToken)
     {
         using var client = new HttpClient();
         using var content = new FormUrlEncodedContent(parameters);
         using var response = await client.PostAsync(Urls.Token, content, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            throw new Exception($"Error requesting token: {response.StatusCode} - {errorContent}");
+        }
 
         return await response.Content.ReadAsStringAsync(cancellationToken);
     }
