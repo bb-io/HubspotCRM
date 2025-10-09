@@ -3,33 +3,18 @@ using Apps.Hubspot.Crm.Invocables;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
-using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Contacts.Request;
 using Apps.Hubspot.Crm.Models.Contacts.Response;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.Models.Properties.Request;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.Hubspot.Crm.Actions;
 
-[ActionList]
-public class ContactActions : HubspotInvocable
+[ActionList("Contacts")]
+public class ContactActions(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
-    public ContactActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
-    //[Action("Get all contacts", Description = "Get a list of all contacts")]
-    //public async Task<ListItemsResponse> GetContacts()
-    //{
-    //    var request = new HubspotRequest("/crm/v3/objects/contacts", Method.Get, Creds);
-
-    //    var response = await Client.GetMultipleObjects(request);
-    //    return new(response);
-    //}
-
     [Action("Get contact", Description = "Get information of a specific contact")]
     public async Task<ContactEntity> GetContact([ActionParameter] ContactRequest contact)
     {

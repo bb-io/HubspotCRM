@@ -12,13 +12,9 @@ using RestSharp;
 
 namespace Apps.Hubspot.Crm.Actions;
 
-[ActionList]
-public class AssociationActions : HubspotInvocable
+[ActionList("Associations")]
+public class AssociationActions(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
-    public AssociationActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
     [Action("Create association label", Description = "Set association labels between two records")]
     public Task CreateAssociationLabel([ActionParameter] CreateAssociationLabelRequest input)
     {

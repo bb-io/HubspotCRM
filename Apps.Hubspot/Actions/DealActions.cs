@@ -1,16 +1,13 @@
 ﻿using Apps.Hubspot.Crm.Api;
 using Apps.Hubspot.Crm.Invocables;
-using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Deals.Request;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
 using Apps.Hubspot.Crm.Models.Deals.Response;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.Models.Properties.Request;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Apps.Hubspot.Crm.Constants;
-using Apps.Hubspot.Crm.Models.Companies.Response;
 using Apps.Hubspot.Crm.Models.Filters;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Apps.Hubspot.Crm.Extensions;
@@ -19,22 +16,9 @@ using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
 
 namespace Apps.Hubspot.Crm.Actions;
 
-[ActionList]
-public class DealActions : HubspotInvocable
+[ActionList("Deals")]
+public class DealActions(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
-    public DealActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
-    //[Action("Get all deals", Description = "Get a list of all deals")]
-    //public async Task<ListItemsResponse> GetDeals()
-    //{
-    //    var request = new HubspotRequest("/crm/v3/objects/deals", Method.Get, Creds);
-
-    //    var response = await Client.GetMultipleObjects(request);
-    //    return new(response);
-    //}
-
     [Action("Get deal", Description = "Get information of a specific deal")]
     public async Task<DealEntity> GetDeal([ActionParameter] DealRequest deal)
     {

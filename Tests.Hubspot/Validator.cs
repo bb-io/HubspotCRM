@@ -2,28 +2,27 @@ using Apps.Hubspot.Crm.Connections;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using HubspotTests.Base;
 
-namespace Tests.Hubspot
+namespace Tests.Hubspot;
+
+[TestClass]
+public class Validator : TestBase
 {
-    [TestClass]
-    public class Validator : TestBase
+    [TestMethod]
+    public async Task ValidatesCorrectConnection()
     {
-        [TestMethod]
-        public async Task ValidatesCorrectConnection()
-        {
-            var validator = new ConnectionValidator();
+        var validator = new ConnectionValidator();
 
-            var result = await validator.ValidateConnection(Creds, CancellationToken.None);
-            Assert.IsTrue(result.IsValid);
-        }
+        var result = await validator.ValidateConnection(Creds, CancellationToken.None);
+        Assert.IsTrue(result.IsValid);
+    }
 
-        [TestMethod]
-        public async Task DoesNotValidateIncorrectConnection()
-        {
-            var validator = new ConnectionValidator();
+    [TestMethod]
+    public async Task DoesNotValidateIncorrectConnection()
+    {
+        var validator = new ConnectionValidator();
 
-            var newCreds = Creds.Select(x => new AuthenticationCredentialsProvider(AuthenticationCredentialsRequestLocation.None,x.KeyName, x.Value + "_incorrect"));
-            var result = await validator.ValidateConnection(newCreds, CancellationToken.None);
-            Assert.IsFalse(result.IsValid);
-        }
+        var newCreds = Creds.Select(x => new AuthenticationCredentialsProvider(AuthenticationCredentialsRequestLocation.None,x.KeyName, x.Value + "_incorrect"));
+        var result = await validator.ValidateConnection(newCreds, CancellationToken.None);
+        Assert.IsFalse(result.IsValid);
     }
 }
