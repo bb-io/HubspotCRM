@@ -3,13 +3,10 @@ using Apps.Hubspot.Crm.Constants;
 using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
 using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Invocables;
-using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Companies.Request;
 using Apps.Hubspot.Crm.Models.Companies.Response;
 using Apps.Hubspot.Crm.Models.Entities;
 using Apps.Hubspot.Crm.Models.Filters;
-using Apps.Hubspot.Crm.Models.Properties.Request;
-using Apps.Hubspot.Crm.Webhooks.Lists;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
@@ -19,22 +16,9 @@ using RestSharp;
 
 namespace Apps.Hubspot.Crm.Actions;
 
-[ActionList]
-public class CompanyActions : HubspotInvocable
+[ActionList("Companies")]
+public class CompanyActions(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
-    public CompanyActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
-    //[Action("Get all companies", Description = "Get a list of all companies")]
-    //public async Task<ListItemsResponse> GetCompanies()
-    //{
-    //    var request = new HubspotRequest("/crm/v3/objects/companies", Method.Get, Creds);
-        
-    //    var response = await Client.GetMultipleObjects(request);
-    //    return new(response);
-    //}
-
     [Action("Get company", Description = "Get information of a specific company")]
     public async Task<CompanyEntity> GetCompany([ActionParameter] CompanyRequest company)
     {

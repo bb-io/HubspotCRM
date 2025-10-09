@@ -1,11 +1,9 @@
 ﻿using Apps.Hubspot.Crm.Api;
 using Apps.Hubspot.Crm.Invocables;
-using Apps.Hubspot.Crm.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using RestSharp;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.Models.Properties.Request;
 using Apps.Hubspot.Crm.Models.Quotes.Request;
 using Apps.Hubspot.Crm.Models.Quotes.Response;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -14,22 +12,9 @@ using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.Hubspot.Crm.Actions;
 
-[ActionList]
-public class QuoteActions : HubspotInvocable
+[ActionList("Quotes")]
+public class QuoteActions(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
-    public QuoteActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
-    //[Action("Get all quotes", Description = "Get a list of all quotes")]
-    //public async Task<ListItemsResponse> GetQuotes()
-    //{
-    //    var request = new HubspotRequest("/crm/v3/objects/quotes", Method.Get, Creds);
-
-    //    var response = await Client.GetMultipleObjects(request);
-    //    return new(response);
-    //}
-
     [Action("Get quote", Description = "Get information of a specific quote")]
     public async Task<QuoteEntity> GetQuote([ActionParameter] QuoteRequest quote)
     {

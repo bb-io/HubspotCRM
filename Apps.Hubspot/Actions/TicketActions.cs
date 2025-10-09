@@ -2,8 +2,6 @@
 using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
 using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.Models.Entities.Base;
-using Apps.Hubspot.Crm.Models.Properties.Request;
 using Apps.Hubspot.Crm.Models.Tickets.Request;
 using Apps.Hubspot.Crm.Models.Tickets.Response;
 using Blackbird.Applications.Sdk.Common;
@@ -15,27 +13,9 @@ using RestSharp;
 
 namespace Apps.Hubspot.Crm.Actions;
 
-[ActionList]
-public class TicketActions : HubspotInvocable
+[ActionList("Tickets")]
+public class TicketActions(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
-    public TicketActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
-    //[Action("Get all tickets", Description = "Get a list of all tickets")]
-    //public async Task<ListTicketsResponse> ListTickets()
-    //{
-    //    var request = new HubspotRequest("/crm/v3/objects/tickets", Method.Get, Creds)
-    //        .AddQueryParameter("associations", "companies");
-
-    //    var response = await Client.Paginate<BaseObjectWithProperties<TicketProperties>>(request);
-    //    var tickets = response
-    //        .Select(x => new TicketEntity(x))
-    //        .ToList();
-
-    //    return new(tickets);
-    //}
-
     [Action("Get ticket", Description = "Get information of a specific ticket")]
     public async Task<TicketEntity> GetTicket([ActionParameter] TicketRequest ticket)
     {
