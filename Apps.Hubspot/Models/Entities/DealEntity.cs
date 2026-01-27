@@ -25,6 +25,12 @@ public class DealEntity
     [Display("Date closed")]
     public DateTime? Closedate { get; set; }
 
+    [Display("Created at")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Display("Updated at")]
+    public DateTime? UpdatedAt { get; set; }
+
     public DealEntity()
     {
         Id = null;
@@ -34,6 +40,8 @@ public class DealEntity
         Pipeline = string.Empty;
         HubspotOwnerId = null;
         Closedate = null;
+        CreatedAt = null;
+        UpdatedAt = null;
     }
     
     public DealEntity(BaseObjectWithProperties<DealProperties> obj)
@@ -45,5 +53,7 @@ public class DealEntity
         Pipeline = obj.Properties.Pipeline;
         HubspotOwnerId = obj.Properties.HubspotOwnerId;
         Closedate = obj.Properties.Closedate;
+        CreatedAt = obj.CreatedAt;
+        UpdatedAt = obj.UpdatedAt;
     }
 }
