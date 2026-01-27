@@ -13,12 +13,117 @@ using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Apps.Hubspot.Crm.Extensions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
+using Apps.Hubspot.Crm.Models;
 
 namespace Apps.Hubspot.Crm.Actions;
 
 [ActionList("Deals")]
 public class DealActions(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
+    [Action("Search deals", Description = "Search deals with optional filters (status, create date, update date)")]
+    public async Task<SearchDealsResponse> SearchDeals([ActionParameter] SearchDealsRequest input)
+    {
+        static string ToUnixMs(DateTime dt)
+        {
+            var utc = dt.Kind == DateTimeKind.Utc ? dt : dt.ToUniversalTime();
+            return new DateTimeOffset(utc).ToUnixTimeMilliseconds().ToString();
+        }
+
+        var filters = new List<object>();
+
+        if (input.Status?.Any() == true)
+        {
+            filters.Add(new
+            {
+                propertyName = "dealstage",
+                @operator = "IN",
+                values = input.Status
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Select(x => x.Trim())
+                    .ToArray()
+            });
+        }
+
+        if (input.CreatedFrom.HasValue)
+        {
+            filters.Add(new
+            {
+                propertyName = "createdate",
+                @operator = "GTE",
+                value = ToUnixMs(input.CreatedFrom.Value)
+            });
+        }
+
+        if (input.CreatedTo.HasValue)
+        {
+            filters.Add(new
+            {
+                propertyName = "createdate",
+                @operator = "LTE",
+                value = ToUnixMs(input.CreatedTo.Value)
+            });
+        }
+
+        if (input.UpdatedFrom.HasValue)
+        {
+            filters.Add(new
+            {
+                propertyName = "hs_lastmodifieddate",
+                @operator = "GTE",
+                value = ToUnixMs(input.UpdatedFrom.Value)
+            });
+        }
+
+        if (input.UpdatedTo.HasValue)
+        {
+            filters.Add(new
+            {
+                propertyName = "hs_lastmodifieddate",
+                @operator = "LTE",
+                value = ToUnixMs(input.UpdatedTo.Value)
+            });
+        }
+
+        var all = new List<DealEntity>();
+        string? after = null;
+
+        var pages = 0;
+        var maxPages = 200;
+
+        do
+        {
+            pages++;
+
+            var payload = new
+            {
+                filterGroups = new[]
+                {
+                    new { filters = filters }
+                },
+                sorts = new[] { "-hs_lastmodifieddate" },
+                properties = new[]
+                {
+                    "amount", "dealname", "dealstage", "pipeline", "hubspot_owner_id", "closedate"
+                },
+                limit = 100,
+                after = after
+            };
+
+            var request = new HubspotRequest("/crm/v3/objects/deals/search", Method.Post, Creds)
+                .WithJsonBody(payload, JsonConfig.Settings);
+
+            var hs = await Client.ExecuteWithErrorHandling<SearchResponse<Apps.Hubspot.Crm.Models.Deals.Response.DealProperties>>(request);
+
+            if (hs.Results?.Any() == true)
+                all.AddRange(hs.Results.Select(r => new DealEntity(r)));
+
+            after = hs.Paging?.Next?.After;
+
+        } while (!string.IsNullOrWhiteSpace(after) && pages < maxPages);
+
+        return new SearchDealsResponse { Deals = all };
+    }
+
     [Action("Get deal", Description = "Get information of a specific deal")]
     public async Task<DealEntity> GetDeal([ActionParameter] DealRequest deal)
     {

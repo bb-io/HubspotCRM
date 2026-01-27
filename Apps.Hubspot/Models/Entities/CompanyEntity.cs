@@ -12,6 +12,12 @@ public class CompanyEntity : CompanyProperties
     [Display("Contact IDs")]
     public IEnumerable<string>? ContactIds { get; set; }
 
+    [Display("Created at")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Display("Updated at")]
+    public DateTime? UpdatedAt { get; set; }
+
     public CompanyEntity()
     {
         Id = null;
@@ -23,6 +29,8 @@ public class CompanyEntity : CompanyProperties
         State = null;
         Lifecyclestage = null;
         ContactIds = null;
+        CreatedAt = null;
+        UpdatedAt = null;
     }
 
     public CompanyEntity(BaseObjectWithProperties<CompanyProperties> response)
@@ -36,5 +44,7 @@ public class CompanyEntity : CompanyProperties
         State = response.Properties.State;
         Lifecyclestage = response.Properties.Lifecyclestage;
         ContactIds = response.Associations?["contacts"].GetDistinctIds();
+        CreatedAt = response.CreatedAt;
+        UpdatedAt = response.UpdatedAt;
     }
 }

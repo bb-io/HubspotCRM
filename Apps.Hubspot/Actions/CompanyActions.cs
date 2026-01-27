@@ -3,6 +3,7 @@ using Apps.Hubspot.Crm.Constants;
 using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
 using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Invocables;
+using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Companies.Request;
 using Apps.Hubspot.Crm.Models.Companies.Response;
 using Apps.Hubspot.Crm.Models.Entities;
@@ -19,6 +20,110 @@ namespace Apps.Hubspot.Crm.Actions;
 [ActionList("Companies")]
 public class CompanyActions(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
+    [Action("Search companies", Description = "Search companies with optional filters (status, create date, update date)")]
+    public async Task<SearchCompaniesResponse> SearchCompanies([ActionParameter] SearchCompaniesRequest input)
+    {
+        static string ToUnixMs(DateTime dt)
+        {
+            var utc = dt.Kind == DateTimeKind.Utc ? dt : dt.ToUniversalTime();
+            return new DateTimeOffset(utc).ToUnixTimeMilliseconds().ToString();
+        }
+
+        var filters = new List<object>();
+
+        if (input.Status?.Any() == true)
+        {
+            filters.Add(new
+            {
+                propertyName = "lifecyclestage",
+                @operator = "IN",
+                values = input.Status
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Select(x => x.Trim())
+                    .ToArray()
+            });
+        }
+
+        if (input.CreatedFrom.HasValue)
+        {
+            filters.Add(new
+            {
+                propertyName = "createdate",
+                @operator = "GTE",
+                value = ToUnixMs(input.CreatedFrom.Value)
+            });
+        }
+
+        if (input.CreatedTo.HasValue)
+        {
+            filters.Add(new
+            {
+                propertyName = "createdate",
+                @operator = "LTE",
+                value = ToUnixMs(input.CreatedTo.Value)
+            });
+        }
+
+        if (input.UpdatedFrom.HasValue)
+        {
+            filters.Add(new
+            {
+                propertyName = "hs_lastmodifieddate",
+                @operator = "GTE",
+                value = ToUnixMs(input.UpdatedFrom.Value)
+            });
+        }
+
+        if (input.UpdatedTo.HasValue)
+        {
+            filters.Add(new
+            {
+                propertyName = "hs_lastmodifieddate",
+                @operator = "LTE",
+                value = ToUnixMs(input.UpdatedTo.Value)
+            });
+        }
+
+        var all = new List<CompanyEntity>();
+        string? after = null;
+
+        var pages = 0;
+        var maxPages = 200;
+
+        do
+        {
+            pages++;
+
+            var payload = new
+            {
+                filterGroups = new[]
+                {
+                    new { filters = filters }
+                },
+                sorts = new[] { "-hs_lastmodifieddate" },
+                properties = new[]
+                {
+                    "domain", "name", "city", "industry", "phone", "state", "lifecyclestage"
+                },
+                limit = 100,
+                after = after
+            };
+
+            var request = new HubspotRequest("/crm/v3/objects/companies/search", Method.Post, Creds)
+                .WithJsonBody(payload, JsonConfig.Settings);
+
+            var hs = await Client.ExecuteWithErrorHandling<SearchResponse<Apps.Hubspot.Crm.Models.Companies.Response.CompanyProperties>>(request);
+
+            if (hs.Results?.Any() == true)
+                all.AddRange(hs.Results.Select(r => new CompanyEntity(r)));
+
+            after = hs.Paging?.Next?.After;
+
+        } while (!string.IsNullOrWhiteSpace(after) && pages < maxPages);
+
+        return new SearchCompaniesResponse { Companies = all };
+    }
+
     [Action("Get company", Description = "Get information of a specific company")]
     public async Task<CompanyEntity> GetCompany([ActionParameter] CompanyRequest company)
     {
