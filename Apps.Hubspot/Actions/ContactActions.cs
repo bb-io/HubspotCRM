@@ -9,6 +9,7 @@ using Apps.Hubspot.Crm.Models.Entities;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
 using Blackbird.Applications.Sdk.Common.Dynamic;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.Hubspot.Crm.Actions;
 
@@ -32,6 +33,11 @@ public class ContactActions(InvocationContext invocationContext) : HubspotInvoca
         [ActionParameter] ContactRequest contact,
         [ActionParameter][DataSource(typeof(ContactPropertiesDataHandler))][Display("Property")] string property)
     {
+        if (string.IsNullOrEmpty(contact.ContactId))
+        {
+            throw new PluginMisconfigurationException("The Contact ID is empty or null. Please check the input and try again");
+        }
+
         var endpoint = $"/crm/v3/objects/contacts/{contact.ContactId}";
         var request = new HubspotRequest(endpoint, Method.Get, Creds);
 

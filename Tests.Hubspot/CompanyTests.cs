@@ -12,7 +12,7 @@ namespace Tests.Hubspot
             var action = new CompanyActions(InvocationContext);
             var request = new Apps.Hubspot.Crm.Models.Companies.Request.SearchCompaniesRequest
             {
-                //CreatedFrom = DateTime.UtcNow.AddDays(-1),
+                Status = new List<string> { "lead" },
             };
 
             var response = await action.SearchCompanies(request);
