@@ -16,7 +16,7 @@ namespace Tests.Hubspot
             Console.WriteLine($"{response.Deals.Count()}");
             foreach (var item in response.Deals)
             {
-                Console.WriteLine($"Deal: {item.Id}  -  {item.Dealname}");
+                Console.WriteLine($"Deal: {item.Id}  -  {item.Dealname}  -  Stage: {item.Pipeline}");
             }
             Assert.IsNotNull(response);
         }
