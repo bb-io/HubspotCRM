@@ -19,6 +19,11 @@ public class ContactActions(InvocationContext invocationContext) : HubspotInvoca
     [Action("Get contact", Description = "Get information of a specific contact")]
     public async Task<ContactEntity> GetContact([ActionParameter] ContactRequest contact)
     {
+        if (string.IsNullOrEmpty(contact.ContactId))
+        {
+            throw new PluginMisconfigurationException("The Contact ID is empty or null. Please check the input and try again");
+        }
+
         var properties = new[] { "firstname", "lastname", "email", "phone", "company", "website", "jobtitle" };
         var endpoint = $"/crm/v3/objects/contacts/{contact.ContactId}?properties={string.Join(',', properties)}";
 
