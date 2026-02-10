@@ -18,13 +18,13 @@ namespace Apps.Hubspot.Crm.Polling.Lists;
 public class Deals(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
     [PollingEvent("On deal status changed", Description = "On deal status changed")]
-    public async Task<PollingEventResponse<DateTimeMemory, List<DealEntity>>> OnDealStatusChanged(
+    public async Task<PollingEventResponse<DateTimeMemory, SearchDealsResponse>> OnDealStatusChanged(
         PollingEventRequest<DateTimeMemory> request,
         [PollingEventParameter] OnStatusChangedRequest input)
     {
         if (request.Memory is null || request.Memory.LastPollingTime is null)
         {
-            return new PollingEventResponse<DateTimeMemory, List<DealEntity>>
+            return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
             {
                 FlyBird = false,
                 Memory = new DateTimeMemory(DateTime.UtcNow),
@@ -76,7 +76,7 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
 
         if (response.Results == null || response.Results.Count == 0)
         {
-            return new PollingEventResponse<DateTimeMemory, List<DealEntity>>
+            return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
             {
                 FlyBird = false,
                 Memory = request.Memory,
@@ -86,11 +86,11 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
 
         var dealEntities = response.Results.Select(r => new DealEntity(r)).ToList();
 
-        return new PollingEventResponse<DateTimeMemory, List<DealEntity>>
+        return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
         {
             FlyBird = true,
             Memory = new DateTimeMemory(DateTime.UtcNow),
-            Result = dealEntities
+            Result = new SearchDealsResponse { Deals = dealEntities }
         };
     }
 }

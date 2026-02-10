@@ -19,7 +19,7 @@ public class PollingTests : TestBase
         var pollingMemory = new PollingEventRequest<DateTimeMemory> { Memory = new DateTimeMemory(memory) };
         var input = new OnStatusChangedRequest 
         { 
-            Status = "qualifiedtobuy",
+            Status = "presentationscheduled",
             DealId = "55827471492"
         };
 
