@@ -71,6 +71,7 @@ Hubspot CRM is a popular and widely-used customer relationship management platfo
 -   **On conversation property changed**
 -   **On deal created/deleted/merged/restored**
 -   **On deal association/property changed**
+-	**On deal status changed**
 -   **On line item created/deleted/merged/restored**
 -   **On line item association/property changed**
 -   **On product created/deleted/merged/restored**
