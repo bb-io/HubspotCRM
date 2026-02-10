@@ -23,12 +23,6 @@ public class DealActions(InvocationContext invocationContext) : HubspotInvocable
     [Action("Search deals", Description = "Search deals with optional filters (status, create date, update date)")]
     public async Task<SearchDealsResponse> SearchDeals([ActionParameter] SearchDealsRequest input)
     {
-        static string ToUnixMs(DateTime dt)
-        {
-            var utc = dt.Kind == DateTimeKind.Utc ? dt : dt.ToUniversalTime();
-            return new DateTimeOffset(utc).ToUnixTimeMilliseconds().ToString();
-        }
-
         var filters = new List<object>();
 
         if (input.Status?.Any() == true)
@@ -50,7 +44,7 @@ public class DealActions(InvocationContext invocationContext) : HubspotInvocable
             {
                 propertyName = "createdate",
                 @operator = "GTE",
-                value = ToUnixMs(input.CreatedFrom.Value)
+                value = input.CreatedFrom.Value.ToUnixMs()
             });
         }
 
@@ -60,7 +54,7 @@ public class DealActions(InvocationContext invocationContext) : HubspotInvocable
             {
                 propertyName = "createdate",
                 @operator = "LTE",
-                value = ToUnixMs(input.CreatedTo.Value)
+                value = input.CreatedTo.Value.ToUnixMs()
             });
         }
 
@@ -70,7 +64,7 @@ public class DealActions(InvocationContext invocationContext) : HubspotInvocable
             {
                 propertyName = "hs_lastmodifieddate",
                 @operator = "GTE",
-                value = ToUnixMs(input.UpdatedFrom.Value)
+                value = input.UpdatedFrom.Value.ToUnixMs()
             });
         }
 
@@ -80,7 +74,7 @@ public class DealActions(InvocationContext invocationContext) : HubspotInvocable
             {
                 propertyName = "hs_lastmodifieddate",
                 @operator = "LTE",
-                value = ToUnixMs(input.UpdatedTo.Value)
+                value = input.UpdatedTo.Value.ToUnixMs()
             });
         }
 

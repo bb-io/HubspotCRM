@@ -1,24 +1,28 @@
-﻿using HubspotTests.Base;
+﻿using Newtonsoft.Json;
+using HubspotTests.Base;
+using Apps.Hubspot.Crm.Actions;
+using Apps.Hubspot.Crm.Models.Deals.Request;
 
-namespace Tests.Hubspot
+namespace Tests.Hubspot;
+
+[TestClass]
+public class DealTests : TestBase
 {
-    [TestClass]
-    public class DealTests : TestBase
+    [TestMethod]
+    public async Task SearchDeals_ShouldReturnDeals()
     {
-        [TestMethod]
-        public async Task SearchDeals_ShouldReturnDeals()
-        {
-            var action = new Apps.Hubspot.Crm.Actions.DealActions(InvocationContext);
-            var request = new Apps.Hubspot.Crm.Models.Deals.Request.SearchDealsRequest
-            {
-            };
-            var response = await action.SearchDeals(request);
-            Console.WriteLine($"{response.Deals.Count()}");
-            foreach (var item in response.Deals)
-            {
-                Console.WriteLine($"Deal: {item.Id}  -  {item.Dealname}  -  Stage: {item.Pipeline}");
-            }
-            Assert.IsNotNull(response);
-        }
+        // Arrange
+        var action = new DealActions(InvocationContext);
+        var request = new SearchDealsRequest 
+        { 
+            CreatedFrom = new DateTime(2026, 02, 10, 10, 0, 0, DateTimeKind.Utc)
+        };
+
+        // Act
+        var response = await action.SearchDeals(request);
+
+        // Assert
+        Console.WriteLine(JsonConvert.SerializeObject(response, Formatting.Indented));
+        Assert.IsNotNull(response);
     }
 }
