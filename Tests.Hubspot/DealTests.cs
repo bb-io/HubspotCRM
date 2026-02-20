@@ -36,7 +36,7 @@ public class DealTests : TestBase
             DealId = "55827471492"
         };
 
-        var property = "for_testing";
+        var property = "hs_is_closed";
         bool value = false;
 
         // Act

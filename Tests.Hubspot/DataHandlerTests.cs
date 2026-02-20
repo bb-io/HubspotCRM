@@ -58,7 +58,7 @@ namespace Tests.Hubspot
         {
             var handler = new DealBooleanPropertiesDataHandler(InvocationContext);
 
-            var result = await handler.GetDataAsync(new Blackbird.Applications.Sdk.Common.Dynamic.DataSourceContext { SearchString = "Test" }, CancellationToken.None);
+            var result = await handler.GetDataAsync(new Blackbird.Applications.Sdk.Common.Dynamic.DataSourceContext { SearchString = "" }, CancellationToken.None);
 
             foreach (var item in result)
             {
