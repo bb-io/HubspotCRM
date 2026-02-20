@@ -25,4 +25,25 @@ public class DealTests : TestBase
         Console.WriteLine(JsonConvert.SerializeObject(response, Formatting.Indented));
         Assert.IsNotNull(response);
     }
+
+    [TestMethod]
+    public async Task SetDealBooleanProperty_ShouldWork()
+    {
+        // Arrange
+        var action = new DealActions(InvocationContext);
+        var request = new DealRequest
+        {
+            DealId = "55827471492"
+        };
+
+        var property = "for_testing";
+        bool value = false;
+
+        // Act
+        var response = await action.SetDealBooleanProperty(request, property, value);
+
+        // Assert
+        Console.WriteLine(JsonConvert.SerializeObject(response, Formatting.Indented));
+        Assert.IsNotNull(response);
+    }
 }

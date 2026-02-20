@@ -194,4 +194,46 @@ public class DealActions(InvocationContext invocationContext) : HubspotInvocable
 
         return Client.ExecuteWithErrorHandling(request);
     }
+
+    [Action("Get deal boolean property", Description = "Get a boolean (single checkbox) property of a deal")]
+    public async Task<BooleanPropertyEntity> GetDealBooleanProperty(
+        [ActionParameter] DealRequest deal,
+        [ActionParameter][DataSource(typeof(DealBooleanPropertiesDataHandler))][Display("Property")] string property)
+    {
+        var endpoint = $"/crm/v3/objects/deals/{deal.DealId}";
+        var request = new HubspotRequest(endpoint, Method.Get, Creds);
+
+        var result = await Client.GetProperty(request, property);
+
+        if (result?.Value == null)
+            return new BooleanPropertyEntity { Value = null };
+
+        if (bool.TryParse(result.Value, out var b))
+            return new BooleanPropertyEntity { Value = b };
+
+        return new BooleanPropertyEntity { Value = null };
+    }
+
+    [Action("Set deal boolean property", Description = "Set a boolean (single checkbox) property of a deal")]
+    public async Task<DealEntity> SetDealBooleanProperty(
+        [ActionParameter] DealRequest deal,
+        [ActionParameter][DataSource(typeof(DealBooleanPropertiesDataHandler))][Display("Property")] string property,
+        [ActionParameter][Display("Value")] bool value)
+    {
+        var endpoint = $"/crm/v3/objects/deals/{deal.DealId}";
+        var request = new HubspotRequest(endpoint, Method.Patch, Creds);
+
+        var payload = new
+        {
+            properties = new Dictionary<string, object>
+            {
+                [property] = value
+            }
+        };
+
+        request.WithJsonBody(payload, JsonConfig.Settings);
+
+        var response = await Client.GetFullObject<DealProperties>(request);
+        return new DealEntity(response);
+    }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Apps.Hubspot.Crm.Models.Entities.Base
+﻿namespace Apps.Hubspot.Crm.Models.Entities.Base
 {
     public class Property
     {
@@ -13,5 +7,15 @@ namespace Apps.Hubspot.Crm.Models.Entities.Base
         public string? Type { get; set; }
         public string? FieldType { get; set; }
         public string? Description { get; set; }
+        public bool? Calculated { get; set; }
+        public bool? Archived { get; set; }
+        public ModificationMetadata? ModificationMetadata { get; set; }
+    }
+
+    public class ModificationMetadata
+    {
+        public bool? ReadOnlyDefinition { get; set; }
+        public bool? ReadOnlyValue { get; set; }
+        public bool? Archivable { get; set; }
     }
 }
