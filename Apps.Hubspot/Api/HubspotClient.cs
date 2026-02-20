@@ -108,7 +108,7 @@ public class HubspotClient : BlackBirdRestClient
 
         if (error != null && string.Equals(error.Category, "VALIDATION_ERROR", StringComparison.OrdinalIgnoreCase))
         {
-            return new PluginApplicationException("The specified inputs are invalid. Please check the inputs and try again.");
+            return new PluginApplicationException($"The specified inputs are invalid, message {error.Message}. Please check the inputs and try again.");
         }
 
         throw new PluginApplicationException(error?.Message);
