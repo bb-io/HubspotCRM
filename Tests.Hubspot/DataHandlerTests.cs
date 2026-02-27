@@ -50,8 +50,22 @@ namespace Tests.Hubspot
             }
 
             Assert.IsNotNull(result);
-        }
+        } 
 
+        [TestMethod]
+        public async Task CompanyPropertiesDataHandler_IsSuccess()
+        {
+            var handler = new CompanyPropertiesDataHandler(InvocationContext);
+
+            var result = await handler.GetDataAsync(new(), CancellationToken.None);
+
+            foreach (var item in result)
+            {
+                Console.WriteLine($"{item.Key}: {item.Value}");
+            }
+
+            Assert.IsNotNull(result);
+        }
 
         [TestMethod]
         public async Task DealBooleanPropertiesDataHandler_IsSuccess()

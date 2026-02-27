@@ -58,13 +58,20 @@ public class HubspotClient : BlackBirdRestClient
 
     public async Task<CustomPropertyEntity> GetProperty(RestRequest request, string name)
     {
-        request.AddQueryParameter("properties", name.ToApiPropertyName());
-        
-        var res = await ExecuteWithErrorHandling<ObjectWithCustomProperties>(request);
-        return new()
+        try
         {
-            Value = res.Properties?[name.ToApiPropertyName()]
-        };
+            request.AddQueryParameter("properties", name.ToApiPropertyName());
+
+            var res = await ExecuteWithErrorHandling<ObjectWithCustomProperties>(request);
+            return new()
+            {
+                Value = res.Properties?[name.ToApiPropertyName()]
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new PluginApplicationException($"Could not get property {name}, error: {ex.Message}");
+        }    
     }
 
     public Task<BaseObjectWithProperties<T>> SetProperty<T>(RestRequest request, string name, string value)
