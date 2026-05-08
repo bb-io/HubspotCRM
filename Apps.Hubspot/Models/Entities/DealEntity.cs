@@ -31,6 +31,10 @@ public class DealEntity
     [Display("Updated at")]
     public DateTime? UpdatedAt { get; set; }
 
+    [Display("Deal type")]
+
+    public string? Dealtype { get; set; }
+
     public DealEntity()
     {
         Id = null;
@@ -42,6 +46,7 @@ public class DealEntity
         Closedate = null;
         CreatedAt = null;
         UpdatedAt = null;
+        Dealtype = null;
     }
     
     public DealEntity(BaseObjectWithProperties<DealProperties> obj)
@@ -55,5 +60,6 @@ public class DealEntity
         Closedate = obj.Properties.Closedate;
         CreatedAt = obj.CreatedAt;
         UpdatedAt = obj.UpdatedAt;
+        Dealtype = obj.Properties.Dealtype;
     }
 }
