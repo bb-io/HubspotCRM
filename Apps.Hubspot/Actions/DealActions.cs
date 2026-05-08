@@ -121,7 +121,7 @@ public class DealActions(InvocationContext invocationContext) : HubspotInvocable
     [Action("Get deal", Description = "Get information of a specific deal")]
     public async Task<DealEntity> GetDeal([ActionParameter] DealRequest deal)
     {
-        var endpoint = $"/crm/v3/objects/deals/{deal.DealId}?properties=amount,dealname,dealstage,pipeline,closedate,hubspot_owner_id,hs_lastmodifieddate,createdate";
+        var endpoint = $"/crm/v3/objects/deals/{deal.DealId}?properties=amount,dealname,dealstage,pipeline,closedate,hubspot_owner_id,hs_lastmodifieddate,createdate,dealtype";
         var request = new HubspotRequest(endpoint, Method.Get, Creds);
 
         var response = await Client.GetFullObject<DealProperties>(request);

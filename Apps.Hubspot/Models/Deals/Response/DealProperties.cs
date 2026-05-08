@@ -13,6 +13,9 @@ public class DealProperties
     [Display("Deal stage")]
     public string? Dealstage { get; set; }
 
+    [Display("Deal type")]
+    public string? Dealtype { get; set; }
+
     public string? Pipeline { get; set; }
 
     [JsonProperty("hubspot_owner_id")]
