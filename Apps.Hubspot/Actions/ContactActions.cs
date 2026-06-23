@@ -1,15 +1,19 @@
-﻿using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Api;
+using Apps.Hubspot.Crm.Constants;
+using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
+using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Invocables;
-using Blackbird.Applications.Sdk.Common;
-using Blackbird.Applications.Sdk.Common.Actions;
-using RestSharp;
 using Apps.Hubspot.Crm.Models.Contacts.Request;
 using Apps.Hubspot.Crm.Models.Contacts.Response;
 using Apps.Hubspot.Crm.Models.Entities;
-using Blackbird.Applications.Sdk.Common.Invocation;
-using Apps.Hubspot.Crm.DataSourceHandlers.PropertiesHandlers;
+using Apps.Hubspot.Crm.Models.Filters;
+using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Exceptions;
+using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using RestSharp;
 
 namespace Apps.Hubspot.Crm.Actions;
 
@@ -31,6 +35,29 @@ public class ContactActions(InvocationContext invocationContext) : HubspotInvoca
 
         var response = await Client.GetFullObject<ContactProperties>(request);
         return new(response);
+    }
+
+    [Action("Find contact by property", Description = "Find the first contact matching a property value")]
+    public async Task<ContactEntity> FindContactByProperty(
+        [ActionParameter][DataSource(typeof(ContactPropertiesDataHandler))][Display("Property")] string property,
+        [ActionParameter][Display("Value")] string value)
+    {
+        var payload = new FilterRequest(value, property.ToApiPropertyName(), "EQ", null);
+        var request = new HubspotRequest("/crm/v3/objects/contacts/search", Method.Post, Creds)
+            .WithJsonBody(payload, JsonConfig.Settings);
+
+        var contacts = await Client.GetMultipleObjects(request);
+        var firstContact = contacts.FirstOrDefault();
+
+        if (firstContact == null)
+        {
+            return new ContactEntity { };
+        }
+
+        return await GetContact(new()
+        {
+            ContactId = firstContact.Id
+        });
     }
 
     [Action("Get contact property", Description = "Get a specific property of a contact")]

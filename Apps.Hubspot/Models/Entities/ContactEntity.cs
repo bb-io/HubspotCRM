@@ -18,6 +18,18 @@ public class ContactEntity
 
     [Display("Job title")] public string? Jobtitle { get; set; }
 
+    public ContactEntity()
+    {
+        Id = null;
+        Email = null;
+        Firstname = null;
+        Lastname = null;
+        Phone = null;
+        Company = null;
+        Website = null;
+        Jobtitle = null;
+    }
+
     public ContactEntity(BaseObjectWithProperties<ContactProperties> obj)
     {
         Id = obj.Id;
