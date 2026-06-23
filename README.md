@@ -37,6 +37,7 @@ Hubspot CRM is a popular and widely-used customer relationship management platfo
 ### Contacts
 
 -  **Get all contacts** returns a list of all contacts.
+-  **Find contact by property** returns the first contact matching a specified property value.
 -  **Get/create/delete contact**
 -  **Get/set contact property**
 
