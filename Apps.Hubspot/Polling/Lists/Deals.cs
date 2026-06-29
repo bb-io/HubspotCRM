@@ -1,10 +1,9 @@
 ﻿using RestSharp;
 using Apps.Hubspot.Crm.Api;
-using Apps.Hubspot.Crm.Constants;
+using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Helper;
 using Apps.Hubspot.Crm.Polling.Inputs;
 using Apps.Hubspot.Crm.Polling.Memory;
@@ -65,15 +64,22 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
             limit = 100
         };
 
-        var requestRequest = new HubspotRequest("/crm/v3/objects/deals/search", Method.Post, Creds)
-            .WithJsonBody(payload, JsonConfig.Settings);
+        string searchEndpoint = "/crm/v3/objects/deals/search";
+        var searchRequest = new HubspotRequest(searchEndpoint, Method.Post, Creds).WithJsonBody(payload);
 
-        var response = await Client.ExecuteWithErrorHandling<SearchResponse<DealProperties>>(requestRequest);
+        var response = await Client.ExecuteWithErrorHandling<SearchResponse<DealProperties>>( searchRequest);
 
         if (response.Results.Count == 0)
-            return PollingHelper.DontFlyBird<SearchDealsResponse>(currentDateTime);
-
+        {
+            return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
+            {
+                FlyBird = false,
+                Memory = request.Memory,
+                Result = null,
+            };
+        }
+        
         var dealEntities = response.Results.Select(r => new DealEntity(r)).ToList();
-        return PollingHelper.FlyBird(currentDateTime, new SearchDealsResponse{ Deals = dealEntities });
+        return PollingHelper.FlyBird(currentDateTime, new SearchDealsResponse { Deals = dealEntities });
     }
 }
