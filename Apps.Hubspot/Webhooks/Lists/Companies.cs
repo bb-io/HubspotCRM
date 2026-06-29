@@ -27,7 +27,7 @@ public class Companies : BaseWebhookList
         WebhookRequest webhookRequest, [WebhookParameter] AssociationChangedInput input)
         => HandleAssociationChangedWebhookResponse(webhookRequest, input);
 
-    [Webhook("On company property changed", typeof(CompanyPropertyChangedHandler),
+    [Webhook("On company default property changed", typeof(CompanyPropertyChangedHandler),
         Description = "On company default property changed. Does not support custom properties")]
     public Task<WebhookResponse<PropertyChangedPayload>> OnCompanyPropertyChanged(
         WebhookRequest webhookRequest, [WebhookParameter] PropertyChangedInput input)

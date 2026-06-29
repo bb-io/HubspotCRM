@@ -15,7 +15,7 @@ using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 
 namespace Apps.Hubspot.Crm.Polling.Lists;
 
-[PollingEventList]
+[PollingEventList("Deals")]
 public class Deals(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
     [PollingEvent("On deal status changed", Description = "On deal status changed")]
@@ -24,7 +24,7 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
         [PollingEventParameter] OnStatusChangedRequest input)
     {
         var currentDateTime = DateTime.UtcNow;
-        
+
         if (request.Memory?.LastPollingTime is null)
             return PollingHelper.DontFlyBird<SearchDealsResponse>(currentDateTime);
 
@@ -74,12 +74,6 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
             return PollingHelper.DontFlyBird<SearchDealsResponse>(currentDateTime);
 
         var dealEntities = response.Results.Select(r => new DealEntity(r)).ToList();
-
-        return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
-        {
-            FlyBird = true,
-            Memory = new DateTimeMemory { LastPollingTime = currentDateTime },
-            Result = new SearchDealsResponse { Deals = dealEntities }
-        };
+        return PollingHelper.FlyBird(currentDateTime, new SearchDealsResponse{ Deals = dealEntities });
     }
 }

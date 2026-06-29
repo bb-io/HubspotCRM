@@ -85,12 +85,7 @@ public class Companies(InvocationContext invocationContext) : HubspotInvocable(i
                 PropertyValue = latest.Value ?? string.Empty
             };
         }).ToArray();
-        
-        return new PollingEventResponse<DateTimeMemory, CompanyPropertiesResponse>
-        {
-            FlyBird = true,
-            Memory = new DateTimeMemory { LastPollingTime = currentDateTime },
-            Result = new(result)
-        };
+
+        return PollingHelper.FlyBird(currentDateTime, new CompanyPropertiesResponse(result));
     }
 }

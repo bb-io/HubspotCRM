@@ -14,4 +14,14 @@ public static class PollingHelper
             Result = default
         };
     }
+
+    public static PollingEventResponse<DateTimeMemory, T> FlyBird<T>(DateTime currentDateTime, T result)
+    {
+        return new PollingEventResponse<DateTimeMemory, T>
+        {
+            FlyBird = true,
+            Memory = new DateTimeMemory { LastPollingTime = currentDateTime },
+            Result = result
+        };
+    }
 }
