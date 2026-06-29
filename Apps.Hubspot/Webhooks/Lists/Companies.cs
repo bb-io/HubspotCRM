@@ -6,7 +6,7 @@ using Blackbird.Applications.Sdk.Common.Webhooks;
 
 namespace Apps.Hubspot.Crm.Webhooks.Lists;
 
-[WebhookList]
+[WebhookList("Companies")]
 public class Companies : BaseWebhookList
 {
     [Webhook("On company created", typeof(CompanyCreationHandler), Description = "On company created")]
@@ -28,7 +28,7 @@ public class Companies : BaseWebhookList
         => HandleAssociationChangedWebhookResponse(webhookRequest, input);
 
     [Webhook("On company property changed", typeof(CompanyPropertyChangedHandler),
-        Description = "On company property changed")]
+        Description = "On company default property changed. Does not support custom properties")]
     public Task<WebhookResponse<PropertyChangedPayload>> OnCompanyPropertyChanged(
         WebhookRequest webhookRequest, [WebhookParameter] PropertyChangedInput input)
         => HandlePropertyChangedWebhookResponse(webhookRequest, input);

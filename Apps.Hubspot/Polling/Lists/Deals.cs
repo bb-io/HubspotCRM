@@ -5,6 +5,7 @@ using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Entities;
 using Apps.Hubspot.Crm.Extensions;
+using Apps.Hubspot.Crm.Helper;
 using Apps.Hubspot.Crm.Polling.Inputs;
 using Apps.Hubspot.Crm.Polling.Memory;
 using Apps.Hubspot.Crm.Models.Deals.Response;
@@ -22,15 +23,10 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
         PollingEventRequest<DateTimeMemory> request,
         [PollingEventParameter] OnStatusChangedRequest input)
     {
-        if (request.Memory is null || request.Memory.LastPollingTime is null)
-        {
-            return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
-            {
-                FlyBird = false,
-                Memory = new DateTimeMemory(DateTime.UtcNow),
-                Result = null,
-            };
-        }
+        var currentDateTime = DateTime.UtcNow;
+        
+        if (request.Memory?.LastPollingTime is null)
+            return PollingHelper.DontFlyBird<SearchDealsResponse>(currentDateTime);
 
         var filters = new List<object>
         {
@@ -74,15 +70,8 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
 
         var response = await Client.ExecuteWithErrorHandling<SearchResponse<DealProperties>>(requestRequest);
 
-        if (response.Results == null || response.Results.Count == 0)
-        {
-            return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
-            {
-                FlyBird = false,
-                Memory = request.Memory,
-                Result = null,
-            };
-        }
+        if (response.Results.Count == 0)
+            return PollingHelper.DontFlyBird<SearchDealsResponse>(currentDateTime);
 
         var dealEntities = response.Results.Select(r => new DealEntity(r)).ToList();
 
