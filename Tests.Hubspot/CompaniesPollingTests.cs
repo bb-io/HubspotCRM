@@ -16,7 +16,7 @@ public class CompaniesPollingTests : TestBase
         var polling = new Companies(InvocationContext);
         var pollingRequest = new PollingEventRequest<DateTimeMemory>
         {
-            Memory = new DateTimeMemory(new DateTime(2026, 06, 29, 10, 0, 0, DateTimeKind.Utc))
+            Memory = new DateTimeMemory { LastPollingTime = new DateTime(2026, 06, 29, 15, 18, 0, DateTimeKind.Utc) }
         };
         var input = new OnCompanyPropertyChangedRequest { Property = "test_property" };
 

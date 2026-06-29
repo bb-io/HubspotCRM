@@ -78,7 +78,7 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
         return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
         {
             FlyBird = true,
-            Memory = new DateTimeMemory(DateTime.UtcNow),
+            Memory = new DateTimeMemory { LastPollingTime = currentDateTime },
             Result = new SearchDealsResponse { Deals = dealEntities }
         };
     }

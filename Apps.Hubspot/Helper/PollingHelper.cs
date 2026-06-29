@@ -10,7 +10,7 @@ public static class PollingHelper
         return new PollingEventResponse<DateTimeMemory, T>
         {
             FlyBird = false,
-            Memory = new DateTimeMemory(currentDateTime),
+            Memory = new DateTimeMemory { LastPollingTime = currentDateTime },
             Result = default
         };
     }

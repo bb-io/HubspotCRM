@@ -16,7 +16,10 @@ public class PollingTests : TestBase
 		// Arrange
 		var polling = new Deals(InvocationContext);
 		var memory = new DateTime(2026, 02, 10, 11, 0, 0, DateTimeKind.Utc);
-        var pollingMemory = new PollingEventRequest<DateTimeMemory> { Memory = new DateTimeMemory(memory) };
+        var pollingMemory = new PollingEventRequest<DateTimeMemory>
+        {
+            Memory = new DateTimeMemory { LastPollingTime = memory }
+        };
         var input = new OnStatusChangedRequest 
         { 
             Status = "presentationscheduled",

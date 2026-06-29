@@ -89,7 +89,7 @@ public class Companies(InvocationContext invocationContext) : HubspotInvocable(i
         return new PollingEventResponse<DateTimeMemory, CompanyPropertiesResponse>
         {
             FlyBird = true,
-            Memory = new DateTimeMemory(currentDateTime),
+            Memory = new DateTimeMemory { LastPollingTime = currentDateTime },
             Result = new(result)
         };
     }
