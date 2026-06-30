@@ -1,10 +1,10 @@
 ﻿using RestSharp;
 using Apps.Hubspot.Crm.Api;
-using Apps.Hubspot.Crm.Constants;
+using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Invocables;
 using Apps.Hubspot.Crm.Models;
 using Apps.Hubspot.Crm.Models.Entities;
-using Apps.Hubspot.Crm.Extensions;
+using Apps.Hubspot.Crm.Helper;
 using Apps.Hubspot.Crm.Polling.Inputs;
 using Apps.Hubspot.Crm.Polling.Memory;
 using Apps.Hubspot.Crm.Models.Deals.Response;
@@ -14,7 +14,7 @@ using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 
 namespace Apps.Hubspot.Crm.Polling.Lists;
 
-[PollingEventList]
+[PollingEventList("Deals")]
 public class Deals(InvocationContext invocationContext) : HubspotInvocable(invocationContext)
 {
     [PollingEvent("On deal status changed", Description = "On deal status changed")]
@@ -22,15 +22,10 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
         PollingEventRequest<DateTimeMemory> request,
         [PollingEventParameter] OnStatusChangedRequest input)
     {
-        if (request.Memory is null || request.Memory.LastPollingTime is null)
-        {
-            return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
-            {
-                FlyBird = false,
-                Memory = new DateTimeMemory(DateTime.UtcNow),
-                Result = null,
-            };
-        }
+        var currentDateTime = DateTime.UtcNow;
+
+        if (request.Memory?.LastPollingTime is null)
+            return PollingHelper.DontFlyBird<SearchDealsResponse>(currentDateTime);
 
         var filters = new List<object>
         {
@@ -69,12 +64,12 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
             limit = 100
         };
 
-        var requestRequest = new HubspotRequest("/crm/v3/objects/deals/search", Method.Post, Creds)
-            .WithJsonBody(payload, JsonConfig.Settings);
+        string searchEndpoint = "/crm/v3/objects/deals/search";
+        var searchRequest = new HubspotRequest(searchEndpoint, Method.Post, Creds).WithJsonBody(payload);
 
-        var response = await Client.ExecuteWithErrorHandling<SearchResponse<DealProperties>>(requestRequest);
+        var response = await Client.ExecuteWithErrorHandling<SearchResponse<DealProperties>>( searchRequest);
 
-        if (response.Results == null || response.Results.Count == 0)
+        if (response.Results.Count == 0)
         {
             return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
             {
@@ -83,14 +78,8 @@ public class Deals(InvocationContext invocationContext) : HubspotInvocable(invoc
                 Result = null,
             };
         }
-
+        
         var dealEntities = response.Results.Select(r => new DealEntity(r)).ToList();
-
-        return new PollingEventResponse<DateTimeMemory, SearchDealsResponse>
-        {
-            FlyBird = true,
-            Memory = new DateTimeMemory(DateTime.UtcNow),
-            Result = new SearchDealsResponse { Deals = dealEntities }
-        };
+        return PollingHelper.FlyBird(currentDateTime, new SearchDealsResponse { Deals = dealEntities });
     }
 }

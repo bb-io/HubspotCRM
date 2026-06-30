@@ -105,6 +105,30 @@ public class HubspotClient : BlackBirdRestClient
 
         return results;
     }
+    
+    public async Task<List<T>> PaginateSearch<T>(RestRequest request)
+    {
+        var results = new List<T>();
+
+        var body = request.Parameters 
+                       .FirstOrDefault(p => p.Type == ParameterType.RequestBody)?.Value as Dictionary<string, object?> 
+                   ?? throw new PluginApplicationException("PaginateSearch requires a body of type Dictionary<string, object?>");
+
+        string? after = null;
+        do
+        {
+            if (after is null) 
+                body.Remove("after"); 
+            else 
+                body["after"] = after;
+
+            var response = await ExecuteWithErrorHandling<MultipleObjects<T>>(request);
+            after = response.Paging?.Next?.After;
+            results.AddRange(response.Results);
+        } while (!string.IsNullOrEmpty(after));
+
+        return results;
+    }
 
     protected override Exception ConfigureErrorException(RestResponse response)
     {

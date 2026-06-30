@@ -79,6 +79,9 @@ Hubspot CRM is a popular and widely-used customer relationship management platfo
 -   **On product property changed**
 -   **On ticket created/deleted/merged/restored**
 -   **On ticket association/property changed**
+-   **On company default property changed**. Does not support custom properties. 
+Use the 'On company custom property changed' event to track custom properties
+-   **On company custom property changed**. On company custom or default property changed
 
 ## Missing features
 
