@@ -1,4 +1,5 @@
-﻿using System.Net.Mime;
+﻿using System.Net;
+using System.Net.Mime;
 using Apps.Hubspot.Crm.Constants;
 using Apps.Hubspot.Crm.Extensions;
 using Apps.Hubspot.Crm.Models;
@@ -10,12 +11,25 @@ using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Utils.Extensions.String;
 using Blackbird.Applications.Sdk.Utils.RestSharp;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Retry;
 using RestSharp;
 
 namespace Apps.Hubspot.Crm.Api;
 
 public class HubspotClient : BlackBirdRestClient
 {
+    private const int RetryCount = 8;
+    private const int BaseBackoffSeconds = 1;
+    private const int MaxBackoffSeconds = 16;
+
+    private static readonly Random Jitter = new();
+
+    private readonly AsyncRetryPolicy<RestResponse> _retryPolicy = Policy
+        .HandleResult<RestResponse>(response => response.StatusCode == HttpStatusCode.TooManyRequests)
+        .WaitAndRetryAsync(RetryCount, (retryAttempt, result, _) => GetRetryDelay(retryAttempt, result.Result),
+            (_, _, _, _) => Task.CompletedTask);
+
     public HubspotClient() :
         base(new()
         {
@@ -38,7 +52,7 @@ public class HubspotClient : BlackBirdRestClient
 
     public override async Task<RestResponse> ExecuteWithErrorHandling(RestRequest request)
     {
-        RestResponse restResponse = await ExecuteAsync(request);
+        RestResponse restResponse = await _retryPolicy.ExecuteAsync(() => ExecuteAsync(request));
         if (!restResponse.IsSuccessStatusCode)
         {
             throw ConfigureErrorException(restResponse);
@@ -143,5 +157,20 @@ public class HubspotClient : BlackBirdRestClient
         }
 
         throw new PluginApplicationException(error?.Message);
+    }
+    
+    private static TimeSpan GetRetryDelay(int retryAttempt, RestResponse response)
+    {
+        var retryAfterHeader = response.Headers?
+            .FirstOrDefault(h => string.Equals(h.Name, "Retry-After", StringComparison.OrdinalIgnoreCase))?
+            .Value?.ToString();
+
+        if (int.TryParse(retryAfterHeader, out var retryAfterSeconds) && retryAfterSeconds > 0)
+            return TimeSpan.FromSeconds(retryAfterSeconds);
+
+        var backoffSeconds = Math.Min(BaseBackoffSeconds * Math.Pow(2, retryAttempt - 1), MaxBackoffSeconds);
+        var jitterMilliseconds = Jitter.Next(0, 500);
+
+        return TimeSpan.FromSeconds(backoffSeconds) + TimeSpan.FromMilliseconds(jitterMilliseconds);
     }
 }
